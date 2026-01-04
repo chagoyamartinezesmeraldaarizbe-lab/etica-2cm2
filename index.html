@@ -1,31 +1,33 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sistema de Gestión Académica - ESCOM</title>
- <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-database-compat.js"></script>
-
-<script>
-  // Pega aquí el código que copiaste en el Paso 1
   
-  const firebaseConfig = {
-  apiKey: "AIzaSyCZeMVzktIZrSRy0eO10nov8jCbUccCRwQ",
-  authDomain: "protocoloeticaescom.firebaseapp.com",
-  projectId: "protocoloeticaescom",
-  storageBucket: "protocoloeticaescom.firebasestorage.app",
-  messagingSenderId: "517297941072",
-  appId: "1:517297941072:web:ee58c6d304848045b5ff55"
-};
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-database-compat.js"></script>
 
-  // Inicializar Firebase
-  firebase.initializeApp(firebaseConfig);
-  const database = firebase.database();
-</script>
+  <script>
+    // Configuración de tu proyecto "protocoloeticaescom"
+    const firebaseConfig = {
+      apiKey: "AIzaSyCZeMVzktIZrSRy0eO10nov8jCbUccCRwQ",
+      authDomain: "protocoloeticaescom.firebaseapp.com",
+      projectId: "protocoloeticaescom",
+      storageBucket: "protocoloeticaescom.firebasestorage.app",
+      messagingSenderId: "517297941072",
+      appId: "1:517297941072:web:ee58c6d304848045b5ff55"
+    };
 
- <style>
+    // Inicializar Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+  </script>
+
+  <style>
     :root { 
         --vino: #6d1d38; --azul: #008fcc; --blanco: #ffffff; --verde: #28a745; --fondo: #f4f4f4;
     }
@@ -40,7 +42,7 @@
     main { display: grid; grid-template-columns: 350px 1fr; gap: 25px; max-width: 1400px; margin: 25px auto; padding: 0 20px; }
     .card-custom { background: rgba(255, 255, 255, 0.98); border-radius: 20px; padding: 25px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
     
-    /* Diseño Alumno (Fiel a Imágenes) */
+    /* Diseño Alumno */
     .progress-container { background: #eee; border-radius: 12px; height: 35px; overflow: hidden; margin: 15px 0; border: 1px solid #ddd; }
     .progress-fill { background: var(--azul); height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; transition: width 1s; }
     .task-item-box { background: white; border-radius: 15px; padding: 18px; display: flex; justify-content: space-between; align-items: center; border-left: 10px solid var(--azul); box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-top: 15px; }
@@ -63,7 +65,7 @@
     <img src="mascota_escom.jpg" width="80" alt="ESCOM">
     <h2 style="color:var(--vino)">Portal de Productividad</h2>
     <input type="text" id="userInput" placeholder="Boleta o Usuario" style="width:90%; margin-bottom:15px;">
-    <input type="password" id="passInput" placeholder="Contraseña" style="width:90%; padding:10px; margin-bottom:20px; border-radius:8px;">
+    <input type="password" id="passInput" placeholder="Contraseña" style="width:90%; margin-bottom:20px;">
     <button onclick="handleLogin()" style="width:100%; background:var(--vino); color:white; font-weight:bold; cursor:pointer; border:none; padding:12px; border-radius:8px;">INGRESAR</button>
     <p id="error-msg" style="color:red; font-size:0.9em; margin-top:10px;"></p>
   </div>
@@ -74,9 +76,9 @@
     <h3>Evaluación Pre-Prueba (ISO 9241)</h3>
     <div style="text-align:left; margin-top:20px;">
       <p>¿Qué tan fragmentada sientes tu información hoy? (1-5)</p>
-      <input type="range" min="1" max="5" style="width:100%">
+      <input type="range" id="q1" min="1" max="5" style="width:100%">
     </div>
-    <button onclick="accessStudentDashboard()" style="margin-top:25px; width:100%; background:var(--vino); color:white; font-weight:bold; border:none; padding:12px; border-radius:8px; cursor:pointer;">Comenzar Sesión</button>
+    <button onclick="accessStudentDashboard()" style="margin-top:25px; width:100%; background:var(--vino); color:white; font-weight:bold; cursor:pointer; padding:12px; border-radius:8px; border:none;">Comenzar Sesión</button>
   </div>
 </div>
 
@@ -107,7 +109,7 @@
         <h3>Gestor de Tareas y Plazos</h3>
         <div style="display:flex; gap:10px;">
             <input type="text" id="tName" placeholder="Nueva tarea..." style="flex:2;">
-            <input type="date" id="tDate" style="border-radius:8px; border:1px solid #ccc; padding:10px;">
+            <input type="date" id="tDate">
             <button onclick="addTask()" style="background:var(--vino); color:white; border:none; padding:10px 20px; cursor:pointer; font-weight:bold; border-radius:8px;">Programar</button>
         </div>
         <div id="taskList"></div>
@@ -116,11 +118,11 @@
   </main>
 </div>
 
-<div id="admin-dashboard" class="hidden">
+<div id="admin-dashboard">
   <header style="background:#333;">
     <div style="display:flex; align-items:center; gap:15px;">
         <img src="mascota_escom.jpg" height="40" style="background:white; border-radius:5px;">
-        <strong>PANEL DE CONTROL CIENTÍFICO</strong>
+        <strong>PANEL DE CONTROL CIENTÍFICO (TIEMPO REAL)</strong>
     </div>
     <button onclick="location.reload()" style="background:var(--vino); color:white; border:none; padding:8px 15px; border-radius:8px; cursor:pointer;">Cerrar Administración</button>
   </header>
@@ -130,18 +132,17 @@
       <canvas id="productivityChart"></canvas>
     </div>
     <div class="chart-container" style="display:flex; flex-direction:column;">
-      <h3>Monitor de Trazabilidad (Actividad de Alumnos)</h3>
-      <div class="log-monitor" id="adminLogs"></div>
-      <button onclick="exportEvidencePDF()" style="margin-top:20px; background:var(--azul); color:white; border:none; padding:15px; font-weight:bold; cursor:pointer; border-radius:10px;">EXPORTAR EVIDENCIA CONSOLIDADA (PDF)</button>
+      <h3>Monitor de Trazabilidad Digital</h3>
+      <div class="log-monitor" id="adminLogs">Esperando actividad de alumnos...</div>
+      <button onclick="exportEvidencePDF()" style="margin-top:20px; background:var(--azul); color:white; border:none; padding:15px; font-weight:bold; cursor:pointer; border-radius:10px;">EXPORTAR EVIDENCIA (PDF)</button>
     </div>
   </div>
 </div>
 
 <script>
-  // CONFIGURACIÓN DE CUENTAS
-  const ADMIN = { user: "administrador", pass: "admin2026", nombre: "Administrador del Proyecto" };
+  const ADMIN = { user: "administrador", pass: "admin2026" };
   
-  // Base de Datos Integral (37 Alumnos)
+  // Base de datos de los 37 alumnos 
   const alumnosDB = [
     { u: "2026630001", p: "escom2026", n: "Pamela Torres Martinez", av: 45, cr: 157, pr: 9.2 },
     { u: "2026630002", p: "escom2026", n: "Rafael Mustafa Shakur Ibarra Hernandez", av: 38, cr: 133, pr: 8.5 },
@@ -184,21 +185,22 @@
 
   let currentRole = null;
   let currentStudent = null;
-  let globalLogs = JSON.parse(localStorage.getItem('student_logs')) || [];
+  let pdfLogs = []; // Para generar el PDF al final
 
   function writeLog(accion) {
-    const user = document.getElementById('userNameDisplay').innerText; // Nombre del alumno
+    if (!currentStudent && currentRole !== 'admin') return;
+
     const logData = {
-        alumno: user,
+        alumno: currentStudent ? currentStudent.n : "Admin",
+        boleta: currentStudent ? currentStudent.u : "N/A",
         accion: accion,
         fecha: new Date().toLocaleString()
     };
 
-    // Esto guarda el log en Firebase bajo una carpeta llamada 'logs_alumnos'
+    // Envía a Firebase Realtime Database
     database.ref('logs_alumnos').push(logData);
-
-    console.log("Log enviado a la nube:", logData);
-}
+    pdfLogs.push(`[${logData.fecha}] ${logData.alumno}: ${accion}`);
+  }
 
   function handleLogin() {
     const u = document.getElementById('userInput').value;
@@ -209,6 +211,7 @@
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('admin-dashboard').style.display = 'block';
       loadAdminPanel();
+      escucharLogsEnTiempoReal();
     } else {
       const student = alumnosDB.find(a => a.u === u && a.p === p);
       if (student) {
@@ -216,9 +219,9 @@
         currentRole = 'student';
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('survey-screen').classList.remove('hidden');
-        writeLog("Sujeto ingresó al sistema.");
+        writeLog("Inició sesión y está en Pre-prueba.");
       } else {
-        document.getElementById('error-msg').textContent = "Credenciales incorrectas.";
+        document.getElementById('error-msg').textContent = "Boleta o contraseña inválida.";
       }
     }
   }
@@ -229,11 +232,13 @@
     document.getElementById('sName').textContent = currentStudent.n;
     document.getElementById('sBoleta').textContent = `Boleta: ${currentStudent.u}`;
     document.getElementById('credInfo').textContent = `Créditos: ${currentStudent.cr} / 350`;
+    
     setTimeout(() => {
         document.getElementById('barWidth').style.width = currentStudent.av + "%";
         document.getElementById('barWidth').textContent = currentStudent.av + "%";
     }, 400);
-    writeLog("Dashboard activo tras Pre-prueba.");
+    
+    writeLog("Comenzó a usar el prototipo (Dashboard activo).");
   }
 
   function addTask() {
@@ -243,25 +248,43 @@
     const div = document.createElement('div');
     div.className = 'task-item-box';
     div.innerHTML = `<div><strong>${name}</strong><br><small>Fecha: ${document.getElementById('tDate').value}</small></div>
-                     <button class="btn-concluir" onclick="this.parentElement.remove(); completeTask('${name}')">Concluir</button>`;
+                     <button class="btn-concluir" onclick="this.parentElement.remove(); writeLog('Finalizó tarea: ${name}')">Concluir</button>`;
     list.prepend(div);
-    writeLog(`Tarea programada: ${name}`);
+    writeLog(`Programó nueva tarea: ${name}`);
+    document.getElementById('tName').value = "";
   }
 
-  function completeTask(name) { writeLog(`Tarea finalizada: ${name}`); }
+  function togglePomo() {
+    const btn = document.getElementById('pBtn');
+    const isStarting = btn.textContent === "Iniciar Enfoque";
+    btn.textContent = isStarting ? "Pausar" : "Iniciar Enfoque";
+    writeLog(isStarting ? "Activó técnica Pomodoro" : "Pausó técnica Pomodoro");
+  }
+
+  function escucharLogsEnTiempoReal() {
+    const box = document.getElementById('adminLogs');
+    database.ref('logs_alumnos').on('value', (snapshot) => {
+        const data = snapshot.val();
+        if(!data) return;
+        box.innerHTML = "";
+        // Mostrar los últimos 50 logs en orden descendente
+        Object.values(data).reverse().slice(0, 50).forEach(l => {
+            box.innerHTML += `<div style="border-bottom: 1px solid #444; padding: 5px; color: #00ff00;">
+                <small>${l.fecha}</small> | <strong>${l.alumno}</strong>: ${l.accion}
+            </div>`;
+        });
+    });
+  }
 
   function loadAdminPanel() {
-    const box = document.getElementById('adminLogs');
-    box.innerHTML = globalLogs.map(l => `<div>> ${l}</div>`).join('');
-    
     const ctx = document.getElementById('productivityChart').getContext('2d');
     new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: alumnosDB.slice(0, 15).map(a => a.n.split(' ')[0]), 
+        labels: alumnosDB.slice(0, 10).map(a => a.n.split(' ')[0]), 
         datasets: [{
           label: 'Avance Curricular (%)',
-          data: alumnosDB.slice(0, 15).map(a => a.av),
+          data: alumnosDB.slice(0, 10).map(a => a.av),
           backgroundColor: 'rgba(109, 29, 56, 0.7)',
           borderRadius: 5
         }]
@@ -273,44 +296,26 @@
   function exportEvidencePDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-    doc.text("EVIDENCIA DE TRAZABILIDAD - INVESTIGACIÓN ÉTICA 2CM2", 15, 20);
-    doc.setFontSize(8);
+    doc.setFontSize(14);
+    doc.text("EVIDENCIA DE TRAZABILIDAD DIGITAL - GRUPO 2CM2", 15, 20);
+    doc.setFontSize(9);
     let y = 30;
-    globalLogs.forEach(log => {
-        if(y > 280) { doc.addPage(); y = 20; }
-        doc.text(log, 15, y);
-        y += 5;
-    });
-    doc.save("Evidencia_Grupo_2CM2.pdf");
-  }
-
-  function togglePomo() {
-    const btn = document.getElementById('pBtn');
-    if(btn.textContent === "Iniciar Enfoque") {
-        btn.textContent = "Pausar";
-        writeLog("Pomodoro activado.");
-    } else {
-        btn.textContent = "Iniciar Enfoque";
-        writeLog("Pomodoro pausado.");
-    }
-  }
-
-  function escucharLogsEnTiempoReal() {
-    const box = document.getElementById('adminLogs');
     
-    // Firebase nos "avisa" cada vez que un alumno hace algo
-    database.ref('logs_alumnos').on('value', (snapshot) => {
+    // Obtener todos los logs históricos de Firebase para el reporte
+    database.ref('logs_alumnos').once('value', (snapshot) => {
         const data = snapshot.val();
-        box.innerHTML = ""; // Limpiar vista anterior
-        
-        for (let id in data) {
-            const l = data[id];
-            box.innerHTML += `<div style="border-bottom: 1px solid #eee; padding: 5px;">
-                <strong>${l.fecha}</strong> - ${l.alumno}: ${l.accion}
-            </div>`;
+        if(!data) {
+            alert("No hay datos para exportar.");
+            return;
         }
+        Object.values(data).forEach(l => {
+            if(y > 280) { doc.addPage(); y = 20; }
+            doc.text(`${l.fecha} | ${l.alumno} (${l.boleta}): ${l.accion}`, 15, y);
+            y += 6;
+        });
+        doc.save("Evidencia_Investigacion_2CM2.pdf");
     });
-}
+  }
 </script>
 </body>
 </html>
