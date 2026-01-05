@@ -12,20 +12,22 @@
   <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-database-compat.js"></script>
 
   <script>
-    // Configuración de tu proyecto "protocoloeticaescom"
-    const firebaseConfig = {
-      apiKey: "AIzaSyCZeMVzktIZrSRy0eO10nov8jCbUccCRwQ",
-      authDomain: "protocoloeticaescom.firebaseapp.com",
-      projectId: "protocoloeticaescom",
-      storageBucket: "protocoloeticaescom.firebasestorage.app",
-      messagingSenderId: "517297941072",
-      appId: "1:517297941072:web:ee58c6d304848045b5ff55"
-    };
+  // El objeto firebaseConfig contiene todas las credenciales necesarias [cite: 103]
+  const firebaseConfig = {
+    apiKey: "AIzaSyCZeMVzktIZrSRy0eO10nov8jCbUccCRwQ",
+    authDomain: "protocoloeticaescom.firebaseapp.com",
+    projectId: "protocoloeticaescom",
+    storageBucket: "protocoloeticaescom.firebasestorage.app",
+    messagingSenderId: "517297941072",
+    appId: "1:517297941072:web:ee58c6d304848045b5ff55",
+    // Esta es la línea que faltaba para conectar con Realtime Database [cite: 207]
+    databaseURL: "https://protocoloeticaescom-default-rtdb.firebaseio.com/"
+  };
 
-    // Inicializar Firebase
-    firebase.initializeApp(https://protocoloeticaescom-default-rtdb.firebaseio.com/);
-    const database = firebase.database();
-  </script>
+  // Se debe inicializar con el objeto completo, no solo con la URL [cite: 212]
+  firebase.initializeApp(firebaseConfig);
+  const database = firebase.database();
+</script>
 
   <style>
     :root { 
@@ -319,4 +321,5 @@
 </script>
 </body>
 </html>
+
 
