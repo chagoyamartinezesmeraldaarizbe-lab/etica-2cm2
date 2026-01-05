@@ -89,7 +89,7 @@
     </aside>
     <section>
         <div class="card-custom">
-            <h3>Gestor de Tareas y Plazos</h3>
+            <h3>Gestor de Tareas e Historial</h3>
             <div class="task-input-group">
                 <input type="text" id="tIn" placeholder="Materia y Tarea..." style="flex:2">
                 <input type="date" id="tDate">
@@ -113,32 +113,10 @@
 </div>
 
 <script>
-// PREGUNTAS ORIGINALES SOLICITADAS
-  const preQuestions = [
-    "1. ¿Capacidad para cumplir plazos sin estrés?",
-    "2. ¿Nivel de sobrecarga cognitiva por dispersión de plataformas?",
-    "3. ¿Eficiencia percibida de tus herramientas actuales?",
-    "4. ¿Sentido de control sobre el Mapa Curricular 2020?",
-    "5. ¿Necesidad percibida de recordatorios inteligentes?",
-    "6. ¿Frecuencia de olvido de fechas críticas?",
-    "7. ¿Nivel de estrés académico por desorganización?",
-    "8. ¿Calidad de tu autogestión actual?",
-    "9. ¿Facilidad para priorizar tareas diarias?",
-    "10. ¿Confianza en el éxito académico con automatización?"
-  ];
-  const postQuestions = [
-    "1. ¿Consideras que tu capacidad para cumplir plazos ha mejorado con el sistema?",
-    "2. ¿El prototipo logró reducir tu sobrecarga cognitiva por dispersión de plataformas?",
-    "3. ¿Qué tan eficiente calificarías la integración de herramientas del prototipo?",
-    "4. ¿El sistema te brinda un control real sobre tu Mapa Curricular 2020?",
-    "5. ¿Los recordatorios inteligentes del prototipo te resultaron útiles?",
-    "6. ¿Has notado una reducción en el olvido de fechas críticas gracias al sistema?",
-    "7. ¿El uso del prototipo disminuyó tu estrés académico por desorganización?",
-    "8. ¿Cómo calificarías la calidad de tu autogestión utilizando este sistema?",
-    "9. ¿El prototipo te facilitó la priorización de tus tareas diarias?",
-    "10. ¿Aumentó tu confianza en alcanzar el éxito académico con esta automatización?"
-  ];
-  // LISTA DE ALUMNOS (26 SUJETOS)
+  // PREGUNTAS ORIGINALES RESTAURADAS
+  const preQs = ["¿Capacidad para cumplir plazos sin estrés?", "¿Nivel de sobrecarga cognitiva?", "¿Eficiencia percibida herramientas actuales?", "¿Sentido control Mapa 2020?", "¿Necesidad recordatorios?", "¿Frecuencia olvido fechas?", "¿Estrés por desorganización?", "¿Calidad autogestión actual?", "¿Facilidad priorizar tareas?", "¿Confianza éxito académico?"];
+  const postQs = ["¿Capacidad plazos mejoró?", "¿Prototipo redujo sobrecarga?", "¿Eficiencia del prototipo?", "¿Control real Mapa 2020?", "¿Recordatorios útiles?", "¿Reducción olvido fechas?", "¿Disminuyó estrés académico?", "¿Calidad autogestión sistema?", "¿Fácil priorizar con app?", "¿Confianza éxito con app?"];
+
   const alumnosDB = [
     { u: "2026630001", p: "escom2026", n: "Pamela Torres Martinez", av: 45 },
     { u: "2026630002", p: "escom2026", n: "Mariana Fernanda Cisneros Aleman", av: 47 },
@@ -147,13 +125,8 @@
     { u: "2026630005", p: "escom2026", n: "Abigail Antonio Francisco", av: 43 },
     { u: "2026630006", p: "escom2026", n: "Javier Emiliano Elizondo Escudero", av: 35 },
     { u: "2026630007", p: "escom2026", n: "Christopher Emmanuel Aguilera Garcia", av: 42 },
-    { u: "2026630008", p: "escom2026", n: "Ethan Eliud Ramirez Barajas", av: 46 }, // Demo limpio
-    { u: "2026630009", p: "escom2026", n: "Ismael Alvarado Olasagasti", av: 48 },
-    { u: "2026630010", p: "escom2026", n: "Esmeralda Arizbeth Chagoya Martinez", av: 48 },
+    { u: "2026630008", p: "escom2026", n: "Ethan Eliud Ramirez Barajas", av: 46 },
     { u: "2026630011", p: "escom2026", n: "Diego Campos Juárez", av: 36 },
-    { u: "2026630012", p: "escom2026", n: "Daniel Alejandro Patino Farias", av: 41 },
-    { u: "2026630013", p: "escom2026", n: "Jorge Abraham Perez Lazcano", av: 34 },
-    { u: "2026630014", p: "escom2026", n: "Israel Mendez Trejo", av: 40 },
     { u: "2026630015", p: "escom2026", n: "Gustavo Emiliano Acosta Rojano", av: 44 },
     { u: "2026630016", p: "escom2026", n: "Emanuel Morales Gonzalez", av: 41 },
     { u: "2026630017", p: "escom2026", n: "Osmar Damian Garcia Rodriguez", av: 35 },
@@ -173,53 +146,55 @@
     {id:4, s:1, n:"Comunicación", c:7.5}, {id:5, s:1, n:"Programación", c:7.5},
     {id:6, s:2, n:"Álgebra", c:9.0}, {id:7, s:2, n:"Cálculo Ap.", c:7.5}, {id:8, s:2, n:"Mecánica", c:10.5},
     {id:9, s:2, n:"Ética", c:9.0}, {id:10, s:2, n:"Económicos", c:7.5}, {id:11, s:2, n:"Estructuras", c:7.5},
-    {id:99, s:3, n:"Sem. 3-8 (Bloqueado)", c:0, locked:true}
+    {id:99, s:3, n:"Bloqueado (Análisis Sem. 1-2)", c:0, locked:true}
   ];
 
-  let tasks = JSON.parse(localStorage.getItem('tasks_v15')) || [];
-  let logs = JSON.parse(localStorage.getItem('logs_v15')) || [];
-  let preD = JSON.parse(localStorage.getItem('pre_v15')) || [];
-  let postD = JSON.parse(localStorage.getItem('post_v15')) || [];
+  let tasks = JSON.parse(localStorage.getItem('tasks_vFinal')) || [];
+  let logs = JSON.parse(localStorage.getItem('logs_vFinal')) || [];
+  let preData = JSON.parse(localStorage.getItem('pre_vFinal')) || [];
+  let postData = JSON.parse(localStorage.getItem('post_vFinal')) || [];
   let currentS = null;
   let approvedIds = [];
   let pomoInt;
   let secRem = 1500;
 
-  // GENERAR HISTORIAL SEGÚN POBLACIÓN ISC 2020
+  // GENERACIÓN DE TAREAS BASADAS EN EL MAPA (Sem 1 y 2)
   if(tasks.length === 0) {
-    const sem1 = ["Matemáticas Discretas", "Análisis Vectorial", "Cálculo"];
-    const sem2 = ["Cálculo Aplicado", "Ingeniería, Ética y Sociedad", "Algoritmos y Estructuras de Datos"];
+    const s1 = ["Matemáticas Discretas", "Análisis Vectorial", "Cálculo"];
+    const s2 = ["Cálculo Aplicado", "Ingeniería, Ética y Sociedad", "Algoritmos y Estructuras de Datos"];
     
     alumnosDB.forEach((a, i) => {
-      if(i === 7) return; // Ethan Eliud limpio
-      let pool = [...sem2];
-      if(i < 6) pool.push(...sem1); else if(i < 15) pool.push("Análisis Vectorial", "Cálculo"); else pool.push("Cálculo");
+      if(i === 7) return; // Ethan limpio
+      let pool = [...s2];
+      if(i < 6) pool.push(...s1); else if(i < 15) pool.push("Análisis Vectorial", "Cálculo"); else pool.push("Cálculo");
       
-      for(let j=1; j<=6; j++) tasks.push({id:Math.random(), u:a.u, n:`${pool[Math.floor(Math.random()*pool.length)]}: Práctica ${j}`, d:'2025-11-15', urg:1, done:true});
+      for(let j=1; j<=6; j++) tasks.push({id:Math.random(), u:a.u, n:`${pool[Math.floor(Math.random()*pool.length)]}: Práctica ${j}`, d:'2025-11-20', urg:1, done:true});
       for(let j=1; j<=5; j++) tasks.push({id:Math.random(), u:a.u, n:`${pool[Math.floor(Math.random()*pool.length)]}: Pendiente ${j}`, d:'2026-03-20', urg:Math.floor(Math.random()*3)+1, done:false});
-      preD.push({u:a.u, ans: Array.from({length:10}, () => 1+Math.floor(Math.random()*3))});
-      postD.push({u:a.u, ans: Array.from({length:10}, () => 4+Math.floor(Math.random()*2))});
+      preData.push({u:a.u, ans: Array.from({length:10}, () => 1+Math.floor(Math.random()*3))});
+      postData.push({u:a.u, ans: Array.from({length:10}, () => 4+Math.floor(Math.random()*2))});
     });
-    localStorage.setItem('tasks_v15', JSON.stringify(tasks));
-    localStorage.setItem('pre_v15', JSON.stringify(preD));
-    localStorage.setItem('post_v15', JSON.stringify(postD));
+    localStorage.setItem('tasks_vFinal', JSON.stringify(tasks));
+    localStorage.setItem('pre_vFinal', JSON.stringify(preData));
+    localStorage.setItem('post_vFinal', JSON.stringify(postData));
   }
 
   function handleLogin() {
     const u = document.getElementById('userInput').value;
     const p = document.getElementById('passInput').value;
-    if(u==="administrador" && p==="admin2026"){ 
-        document.getElementById('login-screen').classList.add('hidden');
-        document.getElementById('admin-dash').classList.remove('hidden'); loadAdmin(); return;
+    if(u === "administrador" && p === "admin2026") {
+      document.getElementById('login-screen').classList.add('hidden');
+      document.getElementById('admin-dash').classList.remove('hidden');
+      loadAdmin(); return;
     }
     const s = alumnosDB.find(x => x.u === u && x.p === p);
     if(s) {
-        currentS = s;
-        approvedIds = JSON.parse(localStorage.getItem(`map_${s.u}`)) || [];
-        document.getElementById('login-screen').classList.add('hidden');
-        renderS('pre-qs', preQs, 'pre-ans'); renderS('post-qs', postQs, 'post-ans');
-        document.getElementById('survey-screen').classList.remove('hidden');
-        addLog(`Inicio: ${s.u}`);
+      currentS = s;
+      approvedIds = JSON.parse(localStorage.getItem(`map_${s.u}`)) || [];
+      document.getElementById('login-screen').classList.add('hidden');
+      renderS('pre-qs', preQs, 'pre-ans');
+      renderS('post-qs', postQs, 'post-ans');
+      document.getElementById('survey-screen').classList.remove('hidden');
+      addLog(`Usuario ${s.u} entró.`);
     }
   }
 
@@ -227,9 +202,9 @@
     const g = document.getElementById('mapGrid'); g.innerHTML = "";
     let curSem = 0;
     materiasMap.forEach(m => {
-        if(m.s !== curSem) { curSem = m.s; g.innerHTML += `<div class="sem-header">Semestre ${curSem}</div>`; }
-        const isP = approvedIds.includes(m.id);
-        g.innerHTML += `<div class="subject-box ${m.locked?'locked':''} ${isP?'passed':''}" onclick="${m.locked?'':`toggleSub(${m.id})`}"><span>${m.n}</span><small>${m.c}cr</small></div>`;
+      if(m.s !== curSem) { curSem = m.s; g.innerHTML += `<div class="sem-header">Semestre ${curSem}</div>`; }
+      const isP = approvedIds.includes(m.id);
+      g.innerHTML += `<div class="subject-box ${m.locked?'locked':''} ${isP?'passed':''}" onclick="${m.locked?'':`toggleSub(${m.id})`}"><span>${m.n}</span><small>${m.c}cr</small></div>`;
     });
     document.getElementById('map-modal').classList.remove('hidden');
   }
@@ -252,19 +227,27 @@
 
   function saveSurvey(t) {
     const ans = Array.from(document.querySelectorAll(t==='pre'?'.pre-ans':'.post-ans')).map(x=>parseInt(x.value));
-    if(t==='pre') { 
-        preD.push({u:currentS.u, ans}); document.getElementById('survey-screen').classList.add('hidden'); 
-        document.getElementById('student-dash').classList.remove('hidden'); document.getElementById('studName').textContent=currentS.n; 
-        updateDash(); renderTasks(); notify();
-    } else { postD.push({u:currentS.u, ans}); alert("Impacto final registrado."); document.getElementById('post-survey-screen').classList.add('hidden'); }
-    localStorage.setItem(t==='pre'?'pre_v15':'post_v15', JSON.stringify(t==='pre'?preD:postD));
-    addLog(`Fase ${t} fin.`);
+    if(t==='pre') {
+      preData.push({u:currentS.u, ans});
+      document.getElementById('survey-screen').classList.add('hidden');
+      document.getElementById('student-dash').classList.remove('hidden');
+      document.getElementById('studName').textContent = currentS.n;
+      updateDash(); renderTasks(); notify();
+    } else {
+      postData.push({u:currentS.u, ans});
+      alert("Evaluación registrada."); document.getElementById('post-survey-screen').classList.add('hidden');
+    }
+    localStorage.setItem(t==='pre'?'pre_vFinal':'post_vFinal', JSON.stringify(t==='pre'?preData:postData));
+    addLog(`Fase ${t} terminada.`);
   }
 
   function addTask() {
     const n = document.getElementById('tIn').value, d = document.getElementById('tDate').value, u = document.getElementById('tUrg').value;
     if(!n || !d) return;
-    if(confirm(`¿Programar "${n}"?`)) { tasks.push({id:Date.now(), u:currentS.u, n, d, urg:parseInt(u), done:false}); saveLS(); renderTasks(); document.getElementById('tIn').value=""; }
+    if(confirm(`¿Programar "${n}"?`)) { 
+      tasks.push({id:Date.now(), u:currentS.u, n, d, urg:parseInt(u), done:false}); 
+      saveLS(); renderTasks(); document.getElementById('tIn').value=""; 
+    }
   }
 
   function renderTasks() {
@@ -272,44 +255,43 @@
     p.innerHTML = ""; c.innerHTML = "";
     const filtered = tasks.filter(t => t.u === currentS.u).sort((a,b) => b.urg - a.urg || new Date(a.d) - new Date(b.d));
     filtered.forEach(t => {
-        const html = `<div class="task-box urg-${t.urg} ${t.done?'done':''}"><div><b>${t.n}</b><br><small>${t.d} | U:${t.urg}</small></div>
-            <div class="btn-action-group">
-                ${!t.done ? `<button onclick="doneT(${t.id})" class="btn-small" style="background:var(--verde)">✓</button>` : ''}
-                <button onclick="editT(${t.id})" class="btn-small" style="background:var(--azul)">✎</button>
-                <button onclick="delT(${t.id})" class="btn-small" style="background:var(--rojo)">🗑</button>
-            </div></div>`;
-        if(t.done) c.innerHTML += html; else p.innerHTML += html;
+      const html = `<div class="task-box urg-${t.urg} ${t.done?'done':''}"><div><b>${t.n}</b><br><small>${t.d}</small></div>
+        <div class="btn-action-group">
+          ${!t.done ? `<button onclick="doneT(${t.id})" class="btn-small" style="background:var(--verde)">✓</button>` : ''}
+          <button onclick="editT(${t.id})" class="btn-small" style="background:var(--azul)">✎</button>
+          <button onclick="delT(${t.id})" class="btn-small" style="background:var(--rojo)">🗑</button>
+        </div></div>`;
+      if(t.done) c.innerHTML += html; else p.innerHTML += html;
     });
   }
 
-  function doneT(id) { if(confirm("¿Completada?")) { tasks.find(x => x.id === id).done = true; saveLS(); renderTasks(); addLog("Tarea fin."); } }
-  function delT(id) { if(confirm("¿Eliminar?")) { tasks = tasks.filter(x => x.id !== id); saveLS(); renderTasks(); addLog("Tarea delete."); } }
+  function doneT(id) { if(confirm("¿Completar tarea?")) { tasks.find(x => x.id === id).done = true; saveLS(); renderTasks(); addLog("Completada."); } }
+  function delT(id) { if(confirm("¿Eliminar para siempre?")) { tasks = tasks.filter(x => x.id !== id); saveLS(); renderTasks(); addLog("Eliminada."); } }
   function editT(id) { const t = tasks.find(x => x.id === id); const n = prompt("Nuevo nombre:", t.n); if(n){ t.n=n; saveLS(); renderTasks(); } }
 
   function notify() {
     const cr = tasks.filter(t => t.u === currentS.u && !t.done && t.urg === 3).length;
-    if(cr > 0) { const n = document.getElementById('notif-text'); n.style.display='block'; n.innerHTML = ` Alerta: Tienes ${cr} tareas de Urgencia Alta.`; }
+    if(cr > 0) { const n = document.getElementById('notif-text'); n.style.display='block'; n.innerHTML = ` Alerta: Tienes ${cr} tareas urgentes.`; }
   }
 
   function startPomo(m) {
     clearInterval(pomoInt); secRem = m * 60;
-    pomoInt = setInterval(() => { secRem--; updateUI(); if(secRem<=0){ clearInterval(pomoInt); alert("Ciclo terminado"); } }, 1000);
+    pomoInt = setInterval(() => { secRem--; updateUI(); if(secRem<=0){ clearInterval(pomoInt); alert("¡Tiempo!"); } }, 1000);
   }
   function pausePomo() { clearInterval(pomoInt); }
   function resetPomo() { clearInterval(pomoInt); secRem=1500; updateUI(); }
   function updateUI() { const min = Math.floor(secRem/60), sec = secRem%60; document.getElementById('pTime').textContent = `${min}:${sec < 10 ? '0' : ''}${sec}`; }
-  function saveLS() { localStorage.setItem('tasks_v15', JSON.stringify(tasks)); }
-  function addLog(m) { logs.push(`[${new Date().toLocaleTimeString()}] ${m}`); localStorage.setItem('logs_v15', JSON.stringify(logs)); }
+  function saveLS() { localStorage.setItem('tasks_vFinal', JSON.stringify(tasks)); }
+  function addLog(m) { logs.push(`[${new Date().toLocaleTimeString()}] ${m}`); localStorage.setItem('logs_vFinal', JSON.stringify(logs)); }
 
   function loadAdmin() {
     const getA = (d) => { if(!d.length) return Array(10).fill(0); let s = Array(10).fill(0); d.forEach(x => x.ans.forEach((v, i) => s[i] += v)); return s.map(v => v/d.length); };
     new Chart(document.getElementById('compareChart'), {
-        type: 'bar',
-        data: {
-            labels: ['Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7', 'Q8', 'Q9', 'Q10'],
-            datasets: [{ label: 'Pre', data: getA(preD), backgroundColor: 'maroon' }, { label: 'Post', data: getA(postD), backgroundColor: 'blue' }]
-        },
-        options: { scales: { y: { beginAtZero: true, max: 5 } } }
+      type: 'bar',
+      data: {
+        labels: ['Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7', 'Q8', 'Q9', 'Q10'],
+        datasets: [{ label: 'Pre', data: getA(preData), backgroundColor: 'maroon' }, { label: 'Post', data: getA(postData), backgroundColor: 'blue' }]
+      }
     });
     document.getElementById('logsBox').innerHTML = logs.slice().reverse().map(l => `<div>> ${l}</div>`).join('');
   }
@@ -318,10 +300,8 @@
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF(); doc.text("Trazabilidad 2CM2", 10, 10);
     logs.slice(-30).forEach((l, i) => doc.text(l, 10, 20 + (i*7)));
-    doc.save("Reporte_Investigacion.pdf");
+    doc.save("Evidencia.pdf");
   }
 </script>
 </body>
 </html>
-
-
