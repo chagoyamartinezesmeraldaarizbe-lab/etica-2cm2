@@ -4,94 +4,104 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sistema de Gestión Académica - ESCOM</title>
-  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  
-  <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-database-compat.js"></script>
-
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCZeMVzktIZrSRy0eO10nov8jCbUccCRwQ",
-      authDomain: "protocoloeticaescom.firebaseapp.com",
-      projectId: "protocoloeticaescom",
-      storageBucket: "protocoloeticaescom.firebasestorage.app",
-      messagingSenderId: "517297941072",
-      appId: "1:517297941072:web:ee58c6d304848045b5ff55",
-      databaseURL: "https://protocoloeticaescom-default-rtdb.firebaseio.com/"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-  </script>
-
   <style>
-    :root { --vino: #6d1d38; --azul: #008fcc; --verde: #28a745; --fondo: #f4f4f4; }
-    body { margin: 0; font-family: 'Segoe UI', sans-serif; background: url("fondo.jpg") no-repeat center center fixed; background-size: cover; color: #333; }
+    :root { 
+        --vino: #6d1d38; --azul: #008fcc; --blanco: #ffffff; --verde: #28a745; --fondo: #f4f4f4;
+    }
+    body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: url("fondo.jpg") no-repeat center center fixed; background-size: cover; color: #333; }
+
+    /* Pantallas de Bloqueo */
     #login-screen, #survey-screen { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: rgba(0,0,0,0.85); position: fixed; width: 100%; z-index: 2000; }
-    .card-ui { background: white; padding: 35px; border-radius: 20px; width: 400px; text-align: center; }
-    header { background: var(--vino); color: white; padding: 15px 40px; display: flex; align-items: center; justify-content: space-between; }
+    .card-ui { background: white; padding: 35px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); width: 500px; text-align: center; max-height: 90vh; overflow-y: auto; }
+
+    /* Estructura Dashboard */
+    header { background: var(--vino); color: white; padding: 15px 40px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
     main { display: grid; grid-template-columns: 350px 1fr; gap: 25px; max-width: 1400px; margin: 25px auto; padding: 0 20px; }
     .card-custom { background: rgba(255, 255, 255, 0.98); border-radius: 20px; padding: 25px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-    .progress-container { background: #eee; border-radius: 12px; height: 35px; overflow: hidden; margin: 15px 0; }
+    
+    /* Diseño Alumno */
+    .progress-container { background: #eee; border-radius: 12px; height: 35px; overflow: hidden; margin: 15px 0; border: 1px solid #ddd; }
     .progress-fill { background: var(--azul); height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; transition: width 1s; }
-    .task-item-box { background: white; border-radius: 15px; padding: 18px; display: flex; justify-content: space-between; align-items: center; border-left: 10px solid var(--azul); margin-top: 15px; }
-    .btn-concluir { background: var(--verde); color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; }
+    .task-item-box { background: white; border-radius: 15px; padding: 18px; display: flex; justify-content: space-between; align-items: center; border-left: 10px solid var(--azul); box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-top: 15px; }
+    .btn-concluir { background: var(--verde); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+
+    /* Panel Administrador */
     #admin-dashboard { display: none; background: #f0f2f5; min-height: 100vh; }
-    .admin-content { padding: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
-    .log-monitor { background: #000; color: #00ff00; font-family: monospace; padding: 15px; border-radius: 12px; height: 300px; overflow-y: auto; }
+    .admin-content { padding: 30px; max-width: 1300px; margin: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+    .log-monitor { background: #000; color: #00ff00; font-family: 'Courier New', monospace; padding: 15px; border-radius: 12px; height: 300px; overflow-y: auto; font-size: 0.85em; }
+    .chart-container { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+
+    .survey-q { text-align: left; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+    .survey-q p { margin: 0 0 10px 0; font-weight: bold; font-size: 0.9em; }
+
     .hidden { display: none !important; }
-    input { padding: 10px; border-radius: 8px; border: 1px solid #ccc; }
+    input, button { border-radius: 8px; border: 1px solid #ccc; padding: 10px; }
   </style>
 </head>
 <body>
 
 <div id="login-screen">
-  <div class="card-ui">
+  <div class="card-ui" style="width: 400px;">
     <img src="mascota_escom.jpg" width="80" alt="ESCOM">
     <h2 style="color:var(--vino)">Portal de Productividad</h2>
     <input type="text" id="userInput" placeholder="Boleta o Usuario" style="width:90%; margin-bottom:15px;">
     <input type="password" id="passInput" placeholder="Contraseña" style="width:90%; margin-bottom:20px;">
-    <button onclick="handleLogin()" style="width:100%; background:var(--vino); color:white; padding:12px; border:none; border-radius:8px; cursor:pointer;">INGRESAR</button>
-    <p id="error-msg" style="color:red;"></p>
+    <button onclick="handleLogin()" style="width:100%; background:var(--vino); color:white; font-weight:bold; cursor:pointer; border:none; padding:12px; border-radius:8px;">INGRESAR</button>
+    <p id="error-msg" style="color:red; font-size:0.9em; margin-top:10px;"></p>
   </div>
 </div>
 
 <div id="survey-screen" class="hidden">
-  <div class="card-ui" style="width:500px">
-    <h3>Evaluación Pre-Prueba (ISO 9241)</h3>
-    <p>¿Qué tan fragmentada sientes tu información hoy? (1-5)</p>
-    <input type="range" id="q1" min="1" max="5" style="width:100%">
-    <button onclick="accessStudentDashboard()" style="margin-top:25px; width:100%; background:var(--vino); color:white; padding:12px; border:none; border-radius:8px; cursor:pointer;">Comenzar Sesión</button>
+  <div class="card-ui">
+    <h3 style="color:var(--vino)">Encuesta de Productividad Inicial</h3>
+    <p style="font-size: 0.85em; color: #666;">Responde con sinceridad para establecer tu línea base de investigación.</p>
+    <div id="survey-questions">
+      <div class="survey-q"><p>1. ¿Capacidad para cumplir plazos sin estrés? (1: Muy mala / 5: Excelente)</p><input type="range" class="q-val" min="1" max="5"></div>
+      <div class="survey-q"><p>2. ¿Nivel de sobrecarga cognitiva por dispersión de plataformas? (1: Muy bajo / 5: Muy alto)</p><input type="range" class="q-val" min="1" max="5"></div>
+      <div class="survey-q"><p>3. ¿Eficiencia percibida de tus herramientas actuales? (1: Muy ineficiente / 5: Muy eficiente)</p><input type="range" class="q-val" min="1" max="5"></div>
+      <div class="survey-q"><p>4. ¿Sentido de control sobre el Mapa Curricular 2020? (1: Ninguno / 5: Total)</p><input type="range" class="q-val" min="1" max="5"></div>
+      <div class="survey-q"><p>5. ¿Necesidad percibida de recordatorios inteligentes? (1: Nada / 5: Indispensable)</p><input type="range" class="q-val" min="1" max="5"></div>
+      <div class="survey-q"><p>6. ¿Frecuencia de olvido de fechas críticas? (1: Nunca / 5: Siempre)</p><input type="range" class="q-val" min="1" max="5"></div>
+      <div class="survey-q"><p>7. ¿Nivel de estrés académico por desorganización? (1: Muy bajo / 5: Muy alto)</p><input type="range" class="q-val" min="1" max="5"></div>
+      <div class="survey-q"><p>8. ¿Calidad de tu autogestión actual? (1: Muy baja / 5: Muy alta)</p><input type="range" class="q-val" min="1" max="5"></div>
+      <div class="survey-q"><p>9. ¿Facilidad para priorizar tareas diarias? (1: Muy difícil / 5: Muy fácil)</p><input type="range" class="q-val" min="1" max="5"></div>
+      <div class="survey-q"><p>10. ¿Confianza en el éxito académico con automatización? (1: Muy baja / 5: Muy alta)</p><input type="range" class="q-val" min="1" max="5"></div>
+    </div>
+    <button onclick="accessStudentDashboard()" style="margin-top:25px; width:100%; background:var(--vino); color:white; font-weight:bold; border:none; padding:12px; border-radius:8px; cursor:pointer;">Enviar y Comenzar Sesión</button>
   </div>
 </div>
 
 <div id="main-dashboard" class="hidden">
   <header>
-    <div><img src="mascota_escom.jpg" height="40"> <strong><span id="sName"></span></strong></div>
-    <button onclick="location.reload()" style="background:none; color:white; border:1px solid white; padding:5px; cursor:pointer;">Cerrar Sesión</button>
+    <div style="display:flex; align-items:center; gap:15px;">
+        <img src="mascota_escom.jpg" height="45" style="background:white; border-radius:5px;">
+        <div><strong>Bienvenido, <span id="sName"></span></strong><br><small id="sBoleta"></small></div>
+    </div>
+    <button onclick="location.reload()" style="background:transparent; color:white; border:1px solid white; padding:5px 15px; cursor:pointer; border-radius:5px;">Cerrar Sesión</button>
   </header>
   <main>
     <aside>
       <div class="card-custom">
-        <h3>Avance Curricular (ISC 2020)</h3>
+        <h3>Mi Avance Curricular</h3>
+        <p><small>Plan ISC 2020</small></p>
         <div class="progress-container"><div id="barWidth" class="progress-fill">0%</div></div>
-        <div id="credInfo" style="color:var(--azul);">Créditos: --</div>
+        <div id="credInfo" style="color:var(--azul); font-weight:bold;">Créditos: --</div>
       </div>
-      <div class="card-custom" style="background:#2c3e50; color:white;">
-        <h3>Pomodoro</h3>
-        <div style="font-size:2em;" id="pTime">25:00</div>
-        <button onclick="togglePomo()" id="pBtn" style="background:#e67e22; border:none; color:white; padding:10px; cursor:pointer;">Iniciar</button>
+      <div class="card-custom" style="background:#2c3e50; color:white; text-align:center;">
+        <h3>Técnica Pomodoro</h3>
+        <div style="font-size:3em; font-weight:bold;" id="pTime">25:00</div>
+        <button onclick="togglePomo()" id="pBtn" style="background:#e67e22; border:none; color:white; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold; margin-top:10px;">Iniciar Enfoque</button>
       </div>
     </aside>
     <section>
       <div class="card-custom">
-        <h3>Tareas y Plazos</h3>
+        <h3>Gestor de Tareas y Plazos</h3>
         <div style="display:flex; gap:10px;">
-          <input type="text" id="tName" placeholder="Nueva tarea..." style="flex:2;">
-          <input type="date" id="tDate">
-          <button onclick="addTask()" style="background:var(--vino); color:white; border:none; padding:10px; cursor:pointer;">Programar</button>
+            <input type="text" id="tName" placeholder="Nueva tarea..." style="flex:2;">
+            <input type="date" id="tDate" style="border-radius:8px; border:1px solid #ccc; padding:10px;">
+            <button onclick="addTask()" style="background:var(--vino); color:white; border:none; padding:10px 20px; cursor:pointer; font-weight:bold; border-radius:8px;">Programar</button>
         </div>
         <div id="taskList"></div>
       </div>
@@ -99,20 +109,31 @@
   </main>
 </div>
 
-<div id="admin-dashboard">
-  <header style="background:#333;"><strong>PANEL DE CONTROL (TIEMPO REAL)</strong></header>
+<div id="admin-dashboard" class="hidden">
+  <header style="background:#333;">
+    <div style="display:flex; align-items:center; gap:15px;">
+        <img src="mascota_escom.jpg" height="40" style="background:white; border-radius:5px;">
+        <strong>PANEL DE CONTROL CIENTÍFICO</strong>
+    </div>
+    <button onclick="location.reload()" style="background:var(--vino); color:white; border:none; padding:8px 15px; border-radius:8px; cursor:pointer;">Cerrar Administración</button>
+  </header>
   <div class="admin-content">
-    <div class="card-custom"><canvas id="productivityChart"></canvas></div>
-    <div class="card-custom">
-      <h3>Monitor de Actividad</h3>
+    <div class="chart-container">
+      <h3>Perfil de Productividad Grupal (Promedios)</h3>
+      <canvas id="productivityChart"></canvas>
+    </div>
+    <div class="chart-container" style="display:flex; flex-direction:column;">
+      <h3>Monitor de Trazabilidad (Actividad de Alumnos)</h3>
       <div class="log-monitor" id="adminLogs"></div>
-      <button onclick="exportEvidencePDF()" style="width:100%; margin-top:10px; background:var(--azul); color:white; border:none; padding:10px; cursor:pointer;">Exportar PDF</button>
+      <button onclick="exportEvidencePDF()" style="margin-top:20px; background:var(--azul); color:white; border:none; padding:15px; font-weight:bold; cursor:pointer; border-radius:10px;">EXPORTAR EVIDENCIA CONSOLIDADA (PDF)</button>
     </div>
   </div>
 </div>
 
 <script>
-  const ADMIN = { user: "administrador", pass: "admin2026" };
+  const ADMIN = { user: "administrador", pass: "admin2026", nombre: "Admin" };
+  
+  // Muestra de 37 Alumnos
   const alumnosDB = [
     { u: "2026630001", p: "escom2026", n: "Pamela Torres Martinez", av: 45, cr: 157, pr: 9.2 },
     { u: "2026630002", p: "escom2026", n: "Rafael Mustafa Shakur Ibarra Hernandez", av: 38, cr: 133, pr: 8.5 },
@@ -153,185 +174,125 @@
     { u: "2026630037", p: "escom2026", n: "Liliana Martinez Acosta", av: 55, cr: 192, pr: 9.8 }
   ];
 
-
+  let currentRole = null;
   let currentStudent = null;
+  let globalLogs = JSON.parse(localStorage.getItem('student_logs')) || [];
+  let surveyData = JSON.parse(localStorage.getItem('survey_results')) || [];
 
-  function writeLog(accion) {
-    if (!currentStudent) return;
-    database.ref('logs_alumnos').push({
-        alumno: currentStudent.n,
-        boleta: currentStudent.u,
-        accion: accion,
-        fecha: new Date().toLocaleString()
-    });
+  function writeLog(msg) {
+    if(currentRole === 'admin') return; 
+    const time = new Date().toLocaleTimeString();
+    const entry = `[${time}] [Sujeto: ${currentStudent.u}] ${msg}`;
+    globalLogs.push(entry);
+    localStorage.setItem('student_logs', JSON.stringify(globalLogs));
   }
 
   function handleLogin() {
     const u = document.getElementById('userInput').value;
     const p = document.getElementById('passInput').value;
-
     if (u === ADMIN.user && p === ADMIN.pass) {
+      currentRole = 'admin';
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('admin-dashboard').style.display = 'block';
-      escucharLogsEnTiempoReal();
-      loadAdminChart();
+      loadAdminPanel();
     } else {
       const student = alumnosDB.find(a => a.u === u && a.p === p);
       if (student) {
         currentStudent = student;
+        currentRole = 'student';
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('survey-screen').classList.remove('hidden');
-        writeLog("Ingreso al sistema");
+        writeLog("Sujeto autenticado.");
       } else {
-        document.getElementById('error-msg').textContent = "Credenciales incorrectas";
+        document.getElementById('error-msg').textContent = "Credenciales incorrectas.";
       }
     }
   }
 
   function accessStudentDashboard() {
+    // Recolectar respuestas de encuesta
+    const answers = Array.from(document.querySelectorAll('.q-val')).map(i => parseInt(i.value));
+    surveyData.push({ u: currentStudent.u, answers: answers });
+    localStorage.setItem('survey_results', JSON.stringify(surveyData));
+
     document.getElementById('survey-screen').classList.add('hidden');
     document.getElementById('main-dashboard').classList.remove('hidden');
     document.getElementById('sName').textContent = currentStudent.n;
-    document.getElementById('barWidth').style.width = currentStudent.av + "%";
-    document.getElementById('barWidth').textContent = currentStudent.av + "%";
+    document.getElementById('sBoleta').textContent = `Boleta: ${currentStudent.u}`;
     document.getElementById('credInfo').textContent = `Créditos: ${currentStudent.cr} / 350`;
-    cargarTareas(currentStudent.u);
+    setTimeout(() => {
+        document.getElementById('barWidth').style.width = currentStudent.av + "%";
+        document.getElementById('barWidth').textContent = currentStudent.av + "%";
+    }, 400);
+    writeLog("Encuesta Pre-prueba completada y Dashboard accedido.");
   }
 
   function addTask() {
     const name = document.getElementById('tName').value;
-    const dateInput = document.getElementById('tDate').value;
-    
-    if(!name || !dateInput) {
-        alert("Por favor, completa el nombre y la fecha de la tarea.");
-        return;
-    }
-
-    // Confirmación de agregar
-    const confirmar = confirm(`¿Deseas programar la tarea: "${name}" para el día ${dateInput}?`);
-    
-    if(confirmar) {
-        const fechaTarea = new Date(dateInput);
-        const hoy = new Date();
-        hoy.setHours(0,0,0,0); // Ajustar para comparar solo fechas
-
-        // Notificación si la tarea ya venció
-        if(fechaTarea < hoy) {
-            alert("Nota: Estás registrando una tarea con fecha pasada o para hoy.");
-        }
-
-        database.ref('tareas/' + currentStudent.u).push({ 
-            nombre: name, 
-            fecha: dateInput 
-        });
-        
-        writeLog(`Agregó tarea: ${name}`);
-        document.getElementById('tName').value = "";
-    }
-}
-
-  function cargarTareas(boleta) {
-    database.ref('tareas/' + boleta).on('value', (snapshot) => {
-        const list = document.getElementById('taskList');
-        list.innerHTML = "";
-        const data = snapshot.val();
-        
-        if(data) {
-            Object.keys(data).forEach(id => {
-                const t = data[id];
-                const fechaTarea = new Date(t.fecha);
-                const hoy = new Date();
-                hoy.setHours(0,0,0,0);
-
-                // Cálculo de diferencia en días
-                const diffTiempo = fechaTarea - hoy;
-                const diffDias = Math.ceil(diffTiempo / (1000 * 60 * 60 * 24));
-                
-                let etiquetaDias = "";
-                let colorEtiqueta = "var(--azul)";
-
-                if(diffDias < 0) {
-                    etiquetaDias = "❌ Tarea vencida";
-                    colorEtiqueta = "red";
-                } else if(diffDias === 0) {
-                    etiquetaDias = "⚠️ Entrega hoy";
-                    colorEtiqueta = "orange";
-                } else {
-                    etiquetaDias = `⏳ Faltan ${diffDias} día(s)`;
-                }
-
-                const div = document.createElement('div');
-                div.className = 'task-item-box';
-                div.style.borderLeftColor = colorEtiqueta; // Cambia color según urgencia
-                
-                div.innerHTML = `
-                    <div>
-                        <b>${t.nombre}</b><br>
-                        <small>${t.fecha} — <span style="color:${colorEtiqueta}; font-weight:bold;">${etiquetaDias}</span></small>
-                    </div>
-                    <button class="btn-concluir" onclick="finalizarTarea('${id}','${t.nombre}')">Concluir</button>
-                `;
-                list.prepend(div);
-            });
-        }
-    });
-}
-
-function finalizarTarea(id, nombre) {
-    const confirmar = confirm(`¿Estás seguro de que quieres marcar como concluida (eliminar) la tarea: "${nombre}"?`);
-    
-    if(confirmar) {
-        database.ref(`tareas/${currentStudent.u}/${id}`).remove();
-        writeLog(`Finalizó tarea: ${nombre}`);
-        alert("Tarea eliminada correctamente.");
-    }
-}
-
-  function escucharLogsEnTiempoReal() {
-    database.ref('logs_alumnos').limitToLast(50).on('value', (snapshot) => {
-      const box = document.getElementById('adminLogs');
-      box.innerHTML = "";
-      const data = snapshot.val();
-      if(data) {
-        Object.values(data).reverse().forEach(l => {
-          box.innerHTML += `<div><small>${l.fecha}</small> <b>${l.alumno}</b>: ${l.accion}</div>`;
-        });
-      }
-    });
+    if(!name) return;
+    const list = document.getElementById('taskList');
+    const div = document.createElement('div');
+    div.className = 'task-item-box';
+    div.innerHTML = `<div><strong>${name}</strong><br><small>Fecha: ${document.getElementById('tDate').value}</small></div>
+                     <button class="btn-concluir" onclick="this.parentElement.remove(); completeTask('${name}')">Concluir</button>`;
+    list.prepend(div);
+    writeLog(`Tarea creada: ${name}`);
   }
 
-  function loadAdminChart() {
-    new Chart(document.getElementById('productivityChart'), {
-      type: 'bar',
+  function completeTask(name) { writeLog(`Tarea finalizada: ${name}`); }
+
+  function loadAdminPanel() {
+    const box = document.getElementById('adminLogs');
+    box.innerHTML = globalLogs.map(l => `<div>> ${l}</div>`).join('');
+    
+    // Generar Gráfica de Perfil de Productividad (Promedios de encuesta)
+    const averages = [0,0,0,0,0,0,0,0,0,0];
+    if(surveyData.length > 0) {
+        surveyData.forEach(s => s.answers.forEach((v, i) => averages[i] += v));
+        averages.forEach((v, i) => averages[i] = v / surveyData.length);
+    }
+
+    const ctx = document.getElementById('productivityChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'radar', // Radar para ver el perfil completo
       data: {
-        labels: alumnosDB.map(a => a.n.split(' ')[0]),
-        datasets: [{ label: '% Avance', data: alumnosDB.map(a => a.av), backgroundColor: '#6d1d38' }]
-      }
+        labels: ['Plazos', 'Carga Cogn.', 'Eficiencia', 'Mapa Curric.', 'Recordatorios', 'Olvido', 'Estrés', 'Autogestión', 'Prioridad', 'Confianza'],
+        datasets: [{
+          label: 'Perfil Grupal 2CM2 (Promedio)',
+          data: averages,
+          backgroundColor: 'rgba(109, 29, 56, 0.4)',
+          borderColor: 'var(--vino)',
+          pointBackgroundColor: 'var(--vino)'
+        }]
+      },
+      options: { scales: { r: { beginAtZero: true, max: 5 } } }
     });
-  }
-
-  function togglePomo() {
-    const btn = document.getElementById('pBtn');
-    const act = btn.textContent === "Iniciar" ? "Activó Pomodoro" : "Pausó Pomodoro";
-    btn.textContent = btn.textContent === "Iniciar" ? "Pausar" : "Iniciar";
-    writeLog(act);
   }
 
   function exportEvidencePDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-    doc.text("Evidencia Trazabilidad 2CM2", 10, 10);
-    database.ref('logs_alumnos').once('value', (s) => {
-      let y = 20;
-      Object.values(s.val()).forEach(l => {
-        doc.text(`${l.fecha} - ${l.alumno}: ${l.accion}`, 10, y);
-        y += 7;
-      });
-      doc.save("Evidencia_ESCOM.pdf");
+    doc.text("EVIDENCIA DE INVESTIGACIÓN ÉTICA - GRUPO 2CM2", 15, 20);
+    doc.setFontSize(8);
+    let y = 30;
+    globalLogs.forEach(log => {
+        if(y > 280) { doc.addPage(); y = 20; }
+        doc.text(log, 15, y);
+        y += 5;
     });
+    doc.save("Evidencia_Grupo_2CM2.pdf");
+  }
+
+  function togglePomo() {
+    const btn = document.getElementById('pBtn');
+    if(btn.textContent === "Iniciar Enfoque") {
+        btn.textContent = "Pausar";
+        writeLog("Pomodoro activado.");
+    } else {
+        btn.textContent = "Iniciar Enfoque";
+        writeLog("Pomodoro pausado.");
+    }
   }
 </script>
 </body>
 </html>
-
-
