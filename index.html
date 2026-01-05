@@ -250,18 +250,56 @@
     }
   }
 
-  function renderTasks() {
+function renderTasks() {
     const p = document.getElementById('pendingList'), c = document.getElementById('completedList');
     p.innerHTML = ""; c.innerHTML = "";
+    
+    // Algoritmo: 1. Urgencia (3 a 1) 2. Fecha (Cercana a lejana)
     const filtered = tasks.filter(t => t.u === currentS.u).sort((a,b) => b.urg - a.urg || new Date(a.d) - new Date(b.d));
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     filtered.forEach(t => {
-      const html = `<div class="task-box urg-${t.urg} ${t.done?'done':''}"><div><b>${t.n}</b><br><small>${t.d}</small></div>
-        <div class="btn-action-group">
-          ${!t.done ? `<button onclick="doneT(${t.id})" class="btn-small" style="background:var(--verde)">✓</button>` : ''}
-          <button onclick="editT(${t.id})" class="btn-small" style="background:var(--azul)">✎</button>
-          <button onclick="delT(${t.id})" class="btn-small" style="background:var(--rojo)">🗑</button>
-        </div></div>`;
-      if(t.done) c.innerHTML += html; else p.innerHTML += html;
+        // Lógica de cálculo de tiempo restante
+        const dueDate = new Date(t.d);
+        dueDate.setHours(0, 0, 0, 0);
+        const diffTime = dueDate - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        let timeLabel = "";
+        let timeColor = "inherit";
+
+        if (t.done) {
+            timeLabel = "Tarea Finalizada";
+        } else if (diffDays < 0) {
+            timeLabel = `⚠️ Vencida hace ${Math.abs(diffDays)} día(s)`;
+            timeColor = "var(--rojo)";
+        } else if (diffDays === 0) {
+            timeLabel = "¡ENTREGA HOY!";
+            timeColor = "var(--naranja)";
+        } else if (diffDays === 1) {
+            timeLabel = "Vence mañana";
+            timeColor = "var(--azul)";
+        } else {
+            timeLabel = `Faltan ${diffDays} días para la entrega`;
+        }
+
+        const html = `
+            <div class="task-box urg-${t.urg} ${t.done?'done':''}">
+                <div>
+                    <b>${t.n}</b><br>
+                    <small>Fecha límite: ${t.d}</small><br>
+                    <small style="color: ${timeColor}; font-weight: bold; font-size: 0.9em;">${timeLabel}</small>
+                </div>
+                <div class="btn-action-group">
+                    ${!t.done ? `<button onclick="doneT(${t.id})" class="btn-small" style="background:var(--verde)">✓</button>` : ''}
+                    <button onclick="editT(${t.id})" class="btn-small" style="background:var(--azul)">✎</button>
+                    <button onclick="delT(${t.id})" class="btn-small" style="background:var(--rojo)">🗑</button>
+                </div>
+            </div>`;
+        
+        if(t.done) c.innerHTML += html; else p.innerHTML += html;
     });
   }
 
@@ -305,3 +343,4 @@
 </script>
 </body>
 </html>
+
