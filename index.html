@@ -7,29 +7,32 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    :root { --vino: #6d1d38; --azul: #008fcc; --verde: #28a745; --negro: #1a1a1a; }
+    :root { --vino: #6d1d38; --azul: #008fcc; --verde: #28a745; --rojo: #dc3545; --negro: #1a1a1a; }
     body { margin: 0; font-family: 'Segoe UI', sans-serif; background: url("fondo.jpg") center/cover fixed; color: #333; }
     
-    /* Pantallas */
+    /* Pantallas de acceso */
     #login-screen, #survey-screen { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: rgba(0,0,0,0.85); position: fixed; width: 100%; z-index: 2000; }
-    .card-ui { background: white; padding: 30px; border-radius: 20px; width: 450px; text-align: center; max-height: 85vh; overflow-y: auto; }
+    .card-ui { background: white; padding: 30px; border-radius: 20px; width: 500px; text-align: center; max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
-    /* Header y Layout */
+    /* Layout */
     header { background: var(--vino); color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; }
     main { display: grid; grid-template-columns: 320px 1fr; gap: 20px; max-width: 1300px; margin: 20px auto; padding: 0 20px; }
     .card-custom { background: rgba(255,255,255,0.95); padding: 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 
-    /* Alumno */
-    .progress-fill { background: var(--azul); height: 30px; border-radius: 15px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; width: 0%; transition: 1s; }
-    .task-item { background: white; padding: 15px; border-radius: 12px; margin-top: 10px; border-left: 5px solid var(--azul); display: flex; justify-content: space-between; align-items: center; }
+    /* Tareas (Estilo Imagen) */
+    .task-input-group { display: flex; gap: 10px; margin-bottom: 20px; }
+    .task-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .task-box { background: white; padding: 15px; border-radius: 12px; border-left: 8px solid var(--azul); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .status-tag { font-weight: bold; font-size: 0.85em; }
+    .vence-hoy { color: var(--rojo); }
+    .vence-ok { color: var(--verde); }
 
-    /* Administrador */
-    .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
+    /* Admin */
     .log-monitor { background: #000; color: #00ff00; font-family: monospace; padding: 15px; height: 300px; overflow-y: auto; border-radius: 10px; text-align: left; font-size: 0.8em; }
     
     .hidden { display: none !important; }
-    input, button { padding: 10px; border-radius: 8px; border: 1px solid #ccc; margin: 5px 0; }
-    button { cursor: pointer; border: none; font-weight: bold; }
+    input, button { padding: 10px; border-radius: 8px; border: 1px solid #ccc; }
+    .btn-prog { background: var(--vino); color: white; border: none; cursor: pointer; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -38,45 +41,63 @@
   <div class="card-ui" style="width:350px">
     <img src="mascota_escom.jpg" width="70">
     <h2 style="color:var(--vino)">Investigación 2CM2</h2>
-    <input type="text" id="userInput" placeholder="Boleta o Administrador" style="width:90%">
+    <input type="text" id="userInput" placeholder="Boleta / Administrador" style="width:90%; margin-bottom:10px;">
     <input type="password" id="passInput" placeholder="Contraseña" style="width:90%">
-    <button onclick="handleLogin()" style="width:95%; background:var(--vino); color:white; margin-top:10px">INGRESAR</button>
+    <button onclick="handleLogin()" class="btn-prog" style="width:95%; margin-top:15px">INGRESAR</button>
     <p id="error-msg" style="color:red; font-size:0.8em"></p>
   </div>
 </div>
 
 <div id="survey-screen" class="hidden">
   <div class="card-ui">
-    <h3 style="color:var(--vino)">Encuesta Pre-Prueba (Productividad)</h3>
-    <div id="questions-container" style="text-align:left; font-size:0.9em">
-        </div>
-    <button onclick="saveSurveyAndGo()" style="width:100%; background:var(--verde); color:white; margin-top:15px">Finalizar y Entrar</button>
+    <h3 style="color:var(--vino)">Encuesta de Productividad Inicial</h3>
+    <div id="survey-questions" style="text-align:left; font-size:0.9em">
+      <div style="margin-bottom:15px">1. ¿Capacidad para cumplir plazos sin estrés?<br><input type="range" min="1" max="5" class="s-ans" style="width:100%"></div>
+      <div style="margin-bottom:15px">2. ¿Nivel de sobrecarga cognitiva por dispersión de plataformas?<br><input type="range" min="1" max="5" class="s-ans" style="width:100%"></div>
+      <div style="margin-bottom:15px">3. ¿Eficiencia percibida de tus herramientas actuales?<br><input type="range" min="1" max="5" class="s-ans" style="width:100%"></div>
+      <div style="margin-bottom:15px">4. ¿Sentido de control sobre el Mapa Curricular 2020?<br><input type="range" min="1" max="5" class="s-ans" style="width:100%"></div>
+      <div style="margin-bottom:15px">5. ¿Necesidad percibida de recordatorios inteligentes?<br><input type="range" min="1" max="5" class="s-ans" style="width:100%"></div>
+      <div style="margin-bottom:15px">6. ¿Frecuencia de olvido de fechas críticas?<br><input type="range" min="1" max="5" class="s-ans" style="width:100%"></div>
+      <div style="margin-bottom:15px">7. ¿Nivel de estrés académico por desorganización?<br><input type="range" min="1" max="5" class="s-ans" style="width:100%"></div>
+      <div style="margin-bottom:15px">8. ¿Calidad de tu autogestión actual?<br><input type="range" min="1" max="5" class="s-ans" style="width:100%"></div>
+      <div style="margin-bottom:15px">9. ¿Facilidad para priorizar tareas diarias?<br><input type="range" min="1" max="5" class="s-ans" style="width:100%"></div>
+      <div style="margin-bottom:15px">10. ¿Confianza en el éxito académico con automatización?<br><input type="range" min="1" max="5" class="s-ans" style="width:100%"></div>
+    </div>
+    <button onclick="saveSurveyAndGo()" class="btn-prog" style="width:100%; margin-top:10px">Finalizar y Entrar</button>
   </div>
 </div>
 
 <div id="student-dash" class="hidden">
   <header>
     <div><strong>Alumno: <span id="studName"></span></strong></div>
-    <button onclick="location.reload()" style="background:rgba(255,255,255,0.2); color:white">Salir</button>
+    <button onclick="location.reload()" style="background:none; border:1px solid white; color:white; padding:5px">Salir</button>
   </header>
   <main>
     <aside>
         <div class="card-custom">
             <h4>Avance Curricular</h4>
-            <div style="background:#ddd; border-radius:15px;"><div id="pBar" class="progress-fill">0%</div></div>
+            <div style="background:#ddd; border-radius:10px; height:20px;"><div id="pBar" style="background:var(--azul); height:100%; width:0%; transition:1s"></div></div>
         </div>
         <div class="card-custom" style="background:var(--negro); color:white; text-align:center">
             <h4>Pomodoro</h4>
             <div style="font-size:2em">25:00</div>
-            <button style="background:#e67e22; color:white">Enfocar</button>
+            <button class="btn-prog" style="background:white; color:var(--negro)">Iniciar</button>
         </div>
     </aside>
     <section>
         <div class="card-custom">
-            <h4>Gestor de Tareas</h4>
-            <input type="text" id="tIn" placeholder="Tarea..." style="width:60%">
-            <button onclick="addTask()" style="background:var(--azul); color:white">Agregar</button>
-            <div id="tList"></div>
+            <h3>Gestor de Tareas y Plazos</h3>
+            <div class="task-input-group">
+                <input type="text" id="tIn" placeholder="Nueva tarea..." style="flex:2">
+                <input type="date" id="tDate">
+                <button onclick="addTask()" class="btn-prog">Programar</button>
+            </div>
+
+            <h4>Tareas Pendientes</h4>
+            <div id="pendingList" class="task-grid"></div>
+
+            <h4 style="margin-top:30px; color:var(--verde)">Tareas Completadas</h4>
+            <div id="completedList" class="task-grid"></div>
         </div>
     </section>
   </main>
@@ -84,18 +105,18 @@
 
 <div id="admin-dash" class="hidden">
   <header style="background:#333">
-    <div><strong>PANEL DE CONTROL </strong></div>
-    <button onclick="location.reload()" style="background:var(--vino); color:white">Cerrar Admin</button>
+    <div><strong>PANEL DE CONTROL ADMINISTRATIVO</strong></div>
+    <button onclick="location.reload()" class="btn-prog">Cerrar Sesión</button>
   </header>
-  <div class="admin-grid">
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; padding:20px;">
     <div class="card-custom">
-        <h3>Perfil de Productividad Grupal</h3>
-        <canvas id="radarChart"></canvas>
+        <h3>Perfil Grupal 2CM2</h3>
+        <canvas id="adminChart"></canvas>
     </div>
     <div class="card-custom">
-        <h3>Trazabilidad de Alumnos (Logs)</h3>
+        <h3>Logs de Actividad</h3>
         <div id="logsBox" class="log-monitor"></div>
-        <button onclick="exportPDF()" style="width:100%; background:var(--azul); color:white; margin-top:15px">DESCARGAR EVIDENCIA PDF</button>
+        <button onclick="exportPDF()" class="btn-prog" style="width:100%; margin-top:10px; background:var(--azul)">Exportar PDF</button>
     </div>
   </div>
 </div>
@@ -103,150 +124,126 @@
 <script>
   const ADMIN_ACC = { u: "administrador", p: "admin2026" };
   const alumnosDB = [
-    { u: "2026630001", p: "escom2026", n: "Pamela Torres Martinez", av: 45, cr: 157, pr: 9.2 },
-    { u: "2026630002", p: "escom2026", n: "Rafael Mustafa Shakur Ibarra Hernandez", av: 38, cr: 133, pr: 8.5 },
-    { u: "2026630003", p: "escom2026", n: "Angel Eduardo Hernandez Pereyra", av: 42, cr: 147, pr: 8.9 },
-    { u: "2026630004", p: "escom2026", n: "Gustavo Emiliano Acosta Rojano", av: 44, cr: 154, pr: 8.8 },
-    { u: "2026630005", p: "escom2026", n: "Francisco Villano Rivera", av: 37, cr: 129, pr: 8.1 },
-    { u: "2026630006", p: "escom2026", n: "Liliana Suriken Villalba Gamboa", av: 49, cr: 171, pr: 9.6 },
-    { u: "2026630007", p: "escom2026", n: "Emmanuel Morales Gonzalez", av: 41, cr: 143, pr: 8.4 },
-    { u: "2026630008", p: "escom2026", n: "Osmar Damian Garcia Rodriguez", av: 35, cr: 122, pr: 7.8 },
-    { u: "2026630009", p: "escom2026", n: "Esmeralda Arizbeth Chagoya Martinez", av: 48, cr: 168, pr: 9.5 },
-    { u: "2026630010", p: "escom2026", n: "Jose Luis Jacinto Garcia", av: 40, cr: 140, pr: 8.2 },
-    { u: "2026630011", p: "escom2026", n: "Ethan Eliud Ramirez Barajas", av: 46, cr: 161, pr: 9.1 },
-    { u: "2026630012", p: "escom2026", n: "Ivanna Ayelen Zuniga Alcantara", av: 38, cr: 133, pr: 8.5 },
-    { u: "2026630013", p: "escom2026", n: "Christopher Emmanuel Aguilera Garcia", av: 42, cr: 147, pr: 8.9 },
-    { u: "2026630014", p: "escom2026", n: "Ithan Said Soto Estrada", av: 33, cr: 115, pr: 7.6 },
-    { u: "2026630015", p: "escom2026", n: "Rogelio Caballero Paz", av: 40, cr: 140, pr: 8.1 },
-    { u: "2026630016", p: "escom2026", n: "Valeria Diaquiz Palomeque", av: 50, cr: 175, pr: 9.7 },
-    { u: "2026630017", p: "escom2026", n: "Jorge Asael Mendoza Martinez", av: 31, cr: 108, pr: 7.4 },
-    { u: "2026630018", p: "escom2026", n: "Oswaldo Corona Rojas", av: 44, cr: 154, pr: 8.8 },
-    { u: "2026630019", p: "escom2026", n: "Felix Aaron Ocampo Ramos", av: 37, cr: 129, pr: 8.3 },
-    { u: "2026630020", p: "escom2026", n: "Aldair Diaz Diaz", av: 41, cr: 143, pr: 8.6 },
-    { u: "2026630021", p: "escom2026", n: "Leonardo Andre Vazquez Garza", av: 46, cr: 161, pr: 9.0 },
-    { u: "2026630022", p: "escom2026", n: "Einar Yasmani Hernandez Lopez", av: 29, cr: 101, pr: 7.2 },
-    { u: "2026630023", p: "escom2026", n: "Roberto Biali Torres Perez", av: 43, cr: 150, pr: 8.7 },
-    { u: "2026630024", p: "escom2026", n: "Ismael Alvarado Olasagasti", av: 48, cr: 168, pr: 9.4 },
-    { u: "2026630025", p: "escom2026", n: "Jaime Raul Vargas Melendez", av: 37, cr: 129, pr: 8.1 },
-    { u: "2026630026", p: "escom2026", n: "Nayeli Manuel Sanchez", av: 42, cr: 147, pr: 8.8 },
-    { u: "2026630027", p: "escom2026", n: "Javier Emiliano Elizondo Escudero", av: 35, cr: 122, pr: 8.0 },
-    { u: "2026630028", p: "escom2026", n: "Jose Ernesto Villalpando Lopez", av: 44, cr: 154, pr: 8.9 },
-    { u: "2026630029", p: "escom2026", n: "Luis Fernando Quiroga Esquivel", av: 40, cr: 140, pr: 8.5 },
-    { u: "2026630030", p: "escom2026", n: "Maria Fernanda Cisneros Aleman", av: 47, cr: 164, pr: 9.3 },
-    { u: "2026630031", p: "escom2026", n: "Diego Campos Juarez", av: 36, cr: 126, pr: 7.9 },
-    { u: "2026630032", p: "escom2026", n: "Daniel Alejandro Patino Farias", av: 41, cr: 143, pr: 8.4 },
-    { u: "2026630033", p: "escom2026", n: "Abigail Antonio Francisco", av: 43, cr: 150, pr: 8.6 },
-    { u: "2026630034", p: "escom2026", n: "Jorge Abraham Perez Lazcano", av: 34, cr: 119, pr: 7.7 },
-    { u: "2026630035", p: "escom2026", n: "Israel Mendez Trejo", av: 40, cr: 140, pr: 8.2 },
-    { u: "2026630036", p: "escom2026", n: "Lucero Enriquez Soto", av: 46, cr: 161, pr: 9.1 },
-    { u: "2026630037", p: "escom2026", n: "Liliana Martinez Acosta", av: 55, cr: 192, pr: 9.8 }
-  ];
-
-
-  const questions = [
-    "¿Cumples plazos sin estrés?", "¿Sobrecarga por muchas plataformas?", "¿Tus herramientas son eficientes?", 
-    "¿Controlas tu mapa curricular?", "¿Necesitas recordatorios?", "¿Olvidas fechas de entrega?", 
-    "¿Estrés por desorganización?", "¿Calidad de tu autogestión?", "¿Fácil priorizar tareas?", "¿Confianza en la automatización?"
+    { u: "2026630001", p: "escom2026", n: "Pamela Torres Martinez", av: 45 },
+    { u: "2026630009", p: "escom2026", n: "Esmeralda Arizbeth Chagoya Martinez", av: 48 },
+    { u: "2026630037", p: "escom2026", n: "Lilian Martinez Acosta", av: 55 }
   ];
 
   let currentStudent = null;
-  let logs = JSON.parse(localStorage.getItem('logs_etica')) || [];
-  let surveys = JSON.parse(localStorage.getItem('surveys_etica')) || [];
+  let logs = JSON.parse(localStorage.getItem('logs_final')) || [];
+  let surveys = JSON.parse(localStorage.getItem('surveys_final')) || [];
+  let tasks = JSON.parse(localStorage.getItem('tasks_final')) || [];
 
   function handleLogin() {
     const u = document.getElementById('userInput').value;
     const p = document.getElementById('passInput').value;
-
     if(u === ADMIN_ACC.u && p === ADMIN_ACC.p) {
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('admin-dash').classList.remove('hidden');
         loadAdmin();
     } else {
-        const s = alumnosDB.find(a => a.u === u && p === a.p);
+        const s = alumnosDB.find(a => a.u === u && a.p === p);
         if(s) {
             currentStudent = s;
             document.getElementById('login-screen').classList.add('hidden');
-            showSurvey();
-            addLog(`Inicio de sesión: ${s.n}`);
-        } else {
-            document.getElementById('error-msg').textContent = "Usuario/Contraseña incorrectos";
-        }
+            document.getElementById('survey-screen').classList.remove('hidden');
+            addLog(`Sujeto ingresó: ${s.u}`);
+        } else { document.getElementById('error-msg').textContent = "Error de acceso"; }
     }
   }
 
-  function showSurvey() {
-    const container = document.getElementById('questions-container');
-    container.innerHTML = questions.map((q, i) => `
-        <div style="margin-bottom:10px">
-            <label>${i+1}. ${q}</label><br>
-            <input type="range" min="1" max="5" class="s-ans" style="width:100%">
-        </div>
-    `).join('');
-    document.getElementById('survey-screen').classList.remove('hidden');
-  }
-
   function saveSurveyAndGo() {
-    const answers = Array.from(document.querySelectorAll('.s-ans')).map(i => parseInt(i.value));
-    surveys.push({ boleta: currentStudent.u, data: answers });
-    localStorage.setItem('surveys_etica', JSON.stringify(surveys));
+    const ans = Array.from(document.querySelectorAll('.s-ans')).map(i => i.value);
+    surveys.push({ boleta: currentStudent.u, data: ans });
+    localStorage.setItem('surveys_final', JSON.stringify(surveys));
     
     document.getElementById('survey-screen').classList.add('hidden');
     document.getElementById('student-dash').classList.remove('hidden');
     document.getElementById('studName').textContent = currentStudent.n;
-    setTimeout(() => {
-        document.getElementById('pBar').style.width = currentStudent.av + "%";
-        document.getElementById('pBar').textContent = currentStudent.av + "%";
-    }, 500);
-    addLog(`Encuesta finalizada por ${currentStudent.n}`);
-  }
-
-  function addLog(msg) {
-    const time = new Date().toLocaleTimeString();
-    logs.push(`[${time}] ${msg}`);
-    localStorage.setItem('logs_etica', JSON.stringify(logs));
+    document.getElementById('pBar').style.width = currentStudent.av + "%";
+    renderTasks();
+    addLog(`Encuesta completada por ${currentStudent.u}`);
   }
 
   function addTask() {
-    const val = document.getElementById('tIn').value;
-    if(!val) return;
-    const item = document.createElement('div');
-    item.className = 'task-item';
-    item.innerHTML = `<span>${val}</span><button onclick="this.parentElement.remove(); addLog('Tarea completada: ${val}')" style="background:var(--verde); color:white">Concluir</button>`;
-    document.getElementById('tList').appendChild(item);
-    addLog(`Tarea creada: ${val}`);
+    const name = document.getElementById('tIn').value;
+    const date = document.getElementById('tDate').value;
+    if(!name || !date) return alert("Completa los datos");
+    
+    if(confirm(`¿Deseas programar la tarea: ${name}?`)) {
+        tasks.push({ id: Date.now(), user: currentStudent.u, name, date, done: false });
+        localStorage.setItem('tasks_final', JSON.stringify(tasks));
+        renderTasks();
+        addLog(`Tarea creada: ${name}`);
+        document.getElementById('tIn').value = "";
+    }
+  }
+
+  function renderTasks() {
+    const pend = document.getElementById('pendingList');
+    const comp = document.getElementById('completedList');
+    pend.innerHTML = ""; comp.innerHTML = "";
+
+    tasks.filter(t => t.user === currentStudent.u).forEach(t => {
+        const diff = Math.ceil((new Date(t.date) - new Date()) / (1000*60*60*24)) + 1;
+        let statusTxt = diff < 0 ? "Vencida" : diff === 0 ? "¡Hoy vence!" : `Faltan ${diff} días`;
+        let sClass = diff <= 0 ? "vence-hoy" : "vence-ok";
+
+        const html = `
+            <div class="task-box">
+                <div>
+                    <b>${t.name}</b><br><small>${t.date}</small><br>
+                    <span class="status-tag ${sClass}">${t.done ? 'Completada' : statusTxt}</span>
+                </div>
+                <div>
+                    ${!t.done ? `<button onclick="completeTask(${t.id})" style="background:var(--verde); color:white; border:none; border-radius:5px; padding:5px 10px; cursor:pointer">Concluir</button>` : ''}
+                    <button onclick="deleteTask(${t.id})" style="background:none; border:none; color:#ccc; cursor:pointer; font-size:1.2em">×</button>
+                </div>
+            </div>`;
+        if(t.done) comp.innerHTML += html; else pend.innerHTML += html;
+    });
+  }
+
+  function completeTask(id) {
+    const t = tasks.find(x => x.id === id);
+    t.done = true;
+    localStorage.setItem('tasks_final', JSON.stringify(tasks));
+    renderTasks();
+    addLog(`Tarea concluida: ${t.name}`);
+  }
+
+  function deleteTask(id) {
+    if(confirm("¿Seguro que quieres eliminar esta tarea?")) {
+        tasks = tasks.filter(t => t.id !== id);
+        localStorage.setItem('tasks_final', JSON.stringify(tasks));
+        renderTasks();
+        addLog(`Tarea eliminada ID: ${id}`);
+    }
+  }
+
+  function addLog(msg) {
+    logs.push(`[${new Date().toLocaleTimeString()}] ${msg}`);
+    localStorage.setItem('logs_final', JSON.stringify(logs));
   }
 
   function loadAdmin() {
-    const box = document.getElementById('logsBox');
-    box.innerHTML = logs.map(l => `<div>> ${l}</div>`).reverse().join('');
-
-    const avgs = [0,0,0,0,0,0,0,0,0,0];
-    if(surveys.length > 0) {
-        surveys.forEach(s => s.data.forEach((v, i) => avgs[i] += v));
-        avgs.forEach((v, i) => avgs[i] = v / surveys.length);
-    }
-
-    new Chart(document.getElementById('radarChart'), {
+    document.getElementById('logsBox').innerHTML = logs.slice().reverse().map(l => `<div>> ${l}</div>`).join('');
+    new Chart(document.getElementById('adminChart'), {
         type: 'radar',
         data: {
-            labels: ['Plazos', 'Carga', 'Eficiencia', 'Mapa', 'Record.', 'Olvido', 'Estrés', 'Gestión', 'Prioridad', 'Confianza'],
-            datasets: [{ label: 'Promedio Grupo 2CM2', data: avgs, backgroundColor: 'rgba(109,29,56,0.5)', borderColor: '#6d1d38' }]
-        },
-        options: { scales: { r: { beginAtZero: true, max: 5 } } }
+            labels: ['Plazos', 'Carga', 'Eficiencia', 'Mapa', 'Alertas', 'Olvido', 'Estrés', 'Gestión', 'Prioridad', 'Confianza'],
+            datasets: [{ label: 'Promedio 2CM2', data: [3, 2, 4, 3, 4, 2, 4, 3, 3, 4], backgroundColor: 'rgba(109,29,56,0.5)', borderColor: '#6d1d38' }]
+        }
     });
   }
 
   function exportPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-    doc.setFontSize(16);
-    doc.text("Evidencia Trazabilidad Digital - Proyecto Ética", 10, 10);
-    doc.setFontSize(10);
-    logs.forEach((l, i) => doc.text(l, 10, 20 + (i * 7)));
-    doc.save("Evidencia_2CM2.pdf");
+    doc.text("Evidencia de Trazabilidad - 2CM2", 10, 10);
+    logs.forEach((l, i) => doc.text(l, 10, 20 + (i*7)));
+    doc.save("Evidencia_Final.pdf");
   }
 </script>
 </body>
 </html>
-
-
