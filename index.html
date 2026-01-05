@@ -1,4 +1,157 @@
-const alumnosDB = [
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sistema de Gestión Académica - ESCOM</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root { --vino: #6d1d38; --azul: #008fcc; --verde: #28a745; --rojo: #dc3545; --negro: #1a1a1a; }
+    body { margin: 0; font-family: 'Segoe UI', sans-serif; background: url("fondo.jpg") center/cover fixed; color: #333; }
+    
+    /* Pantallas de Bloqueo */
+    #login-screen, #survey-screen, #post-survey-screen { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: rgba(0,0,0,0.85); position: fixed; width: 100%; z-index: 2000; }
+    .card-ui { background: white; padding: 30px; border-radius: 20px; width: 500px; text-align: center; max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+
+    /* Estructura Dashboard */
+    header { background: var(--vino); color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+    main { display: grid; grid-template-columns: 350px 1fr; gap: 25px; max-width: 1400px; margin: 25px auto; padding: 0 20px; }
+    .card-custom { background: rgba(255,255,255,0.95); padding: 25px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+
+    /* Barra de Avance con Animación */
+    .progress-bar-container { background: #eee; border-radius: 15px; height: 30px; overflow: hidden; margin: 10px 0; border: 1px solid #ddd; }
+    .progress-fill { background: var(--azul); height: 100%; width: 0%; transition: width 2s cubic-bezier(0.1, 0.5, 0.5, 1); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+
+    /* Gestor de Tareas Estilo Referencia */
+    .task-input-group { display: flex; gap: 10px; margin-bottom: 25px; background: #fff; padding: 15px; border-radius: 15px; border: 1px solid #ddd; }
+    .task-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .task-box { background: white; padding: 15px; border-radius: 12px; border-left: 10px solid var(--azul); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .status-tag { font-weight: bold; font-size: 0.85em; display: block; margin-top: 5px; }
+    .vence-hoy { color: var(--rojo); font-weight: bold; }
+    .vence-ok { color: var(--verde); }
+
+    /* Panel Admin */
+    .log-monitor { background: #000; color: #00ff00; font-family: 'Courier New', monospace; padding: 15px; height: 300px; overflow-y: auto; border-radius: 10px; text-align: left; font-size: 0.8em; }
+    
+    .hidden { display: none !important; }
+    input, button { padding: 12px; border-radius: 10px; border: 1px solid #ccc; }
+    .btn-prog { background: var(--vino); color: white; border: none; cursor: pointer; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="card-ui" style="width:350px">
+    <img src="mascota_escom.jpg" width="80" alt="ESCOM">
+    <h2 style="color:var(--vino)">Investigación 2CM2</h2>
+    <input type="text" id="userInput" placeholder="Boleta / Administrador" style="width:90%; margin-bottom:10px;">
+    <input type="password" id="passInput" placeholder="Contraseña" style="width:90%">
+    <button onclick="handleLogin()" class="btn-prog" style="width:95%; margin-top:15px">INGRESAR</button>
+  </div>
+</div>
+
+<div id="survey-screen" class="hidden">
+  <div class="card-ui">
+    <h3 style="color:var(--vino)">Encuesta Pre-prueba (Diagnóstico)</h3>
+    <div id="pre-qs" style="text-align:left; font-size:0.85em"></div>
+    <button onclick="saveSurvey('pre')" class="btn-prog" style="width:100%; margin-top:15px">Iniciar Aplicación</button>
+  </div>
+</div>
+
+<div id="post-survey-screen" class="hidden">
+  <div class="card-ui">
+    <h3 style="color:var(--azul)">Encuesta Post-prueba (Impacto)</h3>
+    <p style="font-size:0.8em">Califica los resultados obtenidos tras utilizar el prototipo.</p>
+    <div id="post-qs" style="text-align:left; font-size:0.85em"></div>
+    <button onclick="saveSurvey('post')" class="btn-prog" style="width:100%; margin-top:15px; background:var(--azul)">Enviar Evaluación Final</button>
+  </div>
+</div>
+
+<div id="student-dash" class="hidden">
+  <header>
+    <div><strong>Portal Académico: <span id="studName"></span></strong></div>
+    <div style="display:flex; align-items:center;">
+        <button onclick="document.getElementById('post-survey-screen').classList.remove('hidden')" style="background:var(--verde); color:white; border:none; padding:8px 15px; border-radius:10px; margin-right:15px; cursor:pointer; font-weight:bold;">Realizar Post-prueba</button>
+        <button onclick="location.reload()" style="background:none; border:1px solid white; color:white; padding:5px 10px; border-radius:5px; cursor:pointer">Salir</button>
+    </div>
+  </header>
+  <main>
+    <aside>
+        <div class="card-custom">
+            <h4>Avance Curricular ISC 2020</h4>
+            <div class="progress-bar-container"><div id="pBar" class="progress-fill">0%</div></div>
+        </div>
+        <div class="card-custom" style="background:var(--negro); color:white; text-align:center">
+            <h4>Técnica Pomodoro</h4>
+            <div style="font-size:2em">25:00</div>
+            <button class="btn-prog" style="background:white; color:var(--negro); padding:5px 15px;">Iniciar Foco</button>
+        </div>
+    </aside>
+    <section>
+        <div class="card-custom">
+            <h3>Gestor de Tareas y Plazos</h3>
+            <div class="task-input-group">
+                <input type="text" id="tIn" placeholder="Nombre de la tarea..." style="flex:2">
+                <input type="date" id="tDate">
+                <button onclick="addTask()" class="btn-prog">Programar</button>
+            </div>
+            <h4>Tareas Pendientes</h4>
+            <div id="pendingList" class="task-grid"></div>
+            <h4 style="margin-top:30px; color:var(--verde)">Tareas Completadas</h4>
+            <div id="completedList" class="task-grid"></div>
+        </div>
+    </section>
+  </main>
+</div>
+
+<div id="admin-dash" class="hidden">
+  <header style="background:#333">
+    <div><strong>ANÁLISIS DE RESULTADOS GRUPO 2CM2</strong></div>
+    <button onclick="location.reload()" class="btn-prog">Cerrar</button>
+  </header>
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; padding:20px;">
+    <div class="card-custom">
+        <h3>Comparativa de Impacto (Pre vs Post)</h3>
+        <canvas id="compareChart"></canvas>
+    </div>
+    <div class="card-custom">
+        <h3>Logs de Trazabilidad Digital</h3>
+        <div id="logsBox" class="log-monitor"></div>
+        <button onclick="exportPDF()" class="btn-prog" style="width:100%; margin-top:10px; background:var(--azul)">Descargar Reporte</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // BANCO DE PREGUNTAS
+  const preQuestions = [
+    "¿Capacidad para cumplir plazos sin estrés?",
+    "¿Nivel de sobrecarga cognitiva por dispersión de plataformas?",
+    "¿Eficiencia percibida de tus herramientas actuales?",
+    "¿Sentido de control sobre el Mapa Curricular 2020?",
+    "¿Necesidad percibida de recordatorios inteligentes?",
+    "¿Frecuencia de olvido de fechas críticas?",
+    "¿Nivel de estrés académico por desorganización?",
+    "¿Calidad de tu autogestión actual?",
+    "¿Facilidad para priorizar tareas diarias?",
+    "¿Confianza en el éxito académico con automatización?"
+  ];
+
+  const postQuestions = [
+    "¿Consideras que tu capacidad para cumplir plazos ha mejorado con el sistema?",
+    "¿El prototipo logró reducir tu sobrecarga cognitiva por dispersión de plataformas?",
+    "¿Qué tan eficiente calificarías la integración de herramientas del prototipo?",
+    "¿El sistema te brinda un control real sobre tu Mapa Curricular 2020?",
+    "¿Los recordatorios inteligentes del prototipo te resultaron útiles?",
+    "¿Has notado una reducción en el olvido de fechas críticas gracias al sistema?",
+    "¿El uso del prototipo disminuyó tu estrés académico por desorganización?",
+    "¿Cómo calificarías la calidad de tu autogestión utilizando este sistema?",
+    "¿El prototipo te facilitó la priorización de tus tareas diarias?",
+    "¿Aumentó tu confianza en alcanzar el éxito académico con esta automatización?"
+  ];
+
+ const alumnosDB = [
     { u: "2026630001", p: "escom2026", n: "Pamela Torres Martinez", av: 45, cr: 157, pr: 9.2 },
     { u: "2026630002", p: "escom2026", n: "Rafael Mustafa Shakur Ibarra Hernandez", av: 38, cr: 133, pr: 8.5 },
     { u: "2026630003", p: "escom2026", n: "Angel Eduardo Hernandez Pereyra", av: 42, cr: 147, pr: 8.9 },
@@ -37,3 +190,129 @@ const alumnosDB = [
     { u: "2026630036", p: "escom2026", n: "Lucero Enriquez Soto", av: 46, cr: 161, pr: 9.1 },
     { u: "2026630037", p: "escom2026", n: "Liliana Martinez Acosta", av: 55, cr: 192, pr: 9.8 }
   ];
+
+
+  let logs = JSON.parse(localStorage.getItem('logs_u')) || [];
+  let preData = JSON.parse(localStorage.getItem('pre_u')) || [];
+  let postData = JSON.parse(localStorage.getItem('post_u')) || [];
+  let tasks = JSON.parse(localStorage.getItem('tasks_u')) || [];
+  let currentS = null;
+
+  function handleLogin() {
+    const u = document.getElementById('userInput').value;
+    const p = document.getElementById('passInput').value;
+    if(u === "administrador" && p === "admin2026") {
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('admin-dash').classList.remove('hidden');
+        loadAdmin();
+    } else {
+        const s = alumnosDB.find(a => a.u === u && a.p === p);
+        if(s) {
+            currentS = s;
+            document.getElementById('login-screen').classList.add('hidden');
+            renderSurvey('pre-qs', preQuestions, 'pre-ans');
+            document.getElementById('survey-screen').classList.remove('hidden');
+            addLog(`Sujeto ${s.u} inició sesión.`);
+        }
+    }
+  }
+
+  function renderSurvey(containerId, questionList, classId) {
+    document.getElementById(containerId).innerHTML = questionList.map((q, i) => `
+        <div style="margin-bottom:8px"><strong>${i+1}. ${q}</strong><br><input type="range" min="1" max="5" class="${classId}" style="width:100%"></div>
+    `).join('');
+  }
+
+  function saveSurvey(type) {
+    const selector = type === 'pre' ? '.pre-ans' : '.post-ans';
+    const ans = Array.from(document.querySelectorAll(selector)).map(i => parseInt(i.value));
+    if(type === 'pre') {
+        preData.push({ u: currentS.u, ans });
+        localStorage.setItem('pre_u', JSON.stringify(preData));
+        document.getElementById('survey-screen').classList.add('hidden');
+        document.getElementById('student-dash').classList.remove('hidden');
+        document.getElementById('studName').textContent = currentS.n;
+        setTimeout(() => { document.getElementById('pBar').style.width = currentS.av + "%"; document.getElementById('pBar').textContent = currentS.av + "%"; }, 500);
+        renderSurvey('post-qs', postQuestions, 'post-ans');
+    } else {
+        postData.push({ u: currentS.u, ans });
+        localStorage.setItem('post_u', JSON.stringify(postData));
+        alert("¡Evaluación de impacto enviada con éxito!");
+        document.getElementById('post-survey-screen').classList.add('hidden');
+    }
+    addLog(`Fase ${type} completada.`);
+    renderTasks();
+  }
+
+  function addTask() {
+    const n = document.getElementById('tIn').value;
+    const d = document.getElementById('tDate').value;
+    if(!n || !d) return;
+    if(confirm(`¿Deseas programar la tarea: ${n}?`)) {
+        tasks.push({ id: Date.now(), u: currentS.u, n, d, done: false });
+        localStorage.setItem('tasks_u', JSON.stringify(tasks));
+        addLog(`Tarea creada: ${n}`);
+        renderTasks();
+    }
+  }
+
+  function renderTasks() {
+    const pend = document.getElementById('pendingList');
+    const comp = document.getElementById('completedList');
+    pend.innerHTML = ""; comp.innerHTML = "";
+    tasks.filter(t => t.u === currentS.u).forEach(t => {
+        const diff = Math.ceil((new Date(t.d) - new Date()) / (1000*60*60*24)) + 1;
+        const html = `<div class="task-box"><div><b>${t.n}</b><br><small>${t.d} (${diff <= 0 ? '¡Vence hoy!' : 'En '+diff+' días'})</small></div>
+            <button onclick="finishTask(${t.id})" class="btn-prog" style="background:var(--verde); padding:5px 10px">${t.done ? '✓' : 'Concluir'}</button></div>`;
+        if(t.done) comp.innerHTML += html; else pend.innerHTML += html;
+    });
+  }
+
+  function finishTask(id) {
+    const t = tasks.find(x => x.id === id);
+    if(confirm("¿Marcar como completada?")) {
+        t.done = true;
+        localStorage.setItem('tasks_u', JSON.stringify(tasks));
+        renderTasks();
+        addLog(`Tarea concluida: ${t.n}`);
+    }
+  }
+
+  function addLog(m) {
+    logs.push(`[${new Date().toLocaleTimeString()}] ${m}`);
+    localStorage.setItem('logs_u', JSON.stringify(logs));
+  }
+
+  function loadAdmin() {
+    document.getElementById('logsBox').innerHTML = logs.slice().reverse().map(l => `<div>> ${l}</div>`).join('');
+    
+    const getAvg = (data) => {
+        if(data.length === 0) return Array(10).fill(0);
+        let sums = Array(10).fill(0);
+        data.forEach(d => d.ans.forEach((v, i) => sums[i] += v));
+        return sums.map(s => s / data.length);
+    };
+
+    new Chart(document.getElementById('compareChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7', 'Q8', 'Q9', 'Q10'],
+            datasets: [
+                { label: 'Situación Inicial (Pre)', data: getAvg(preData), backgroundColor: 'rgba(109,29,56,0.7)' },
+                { label: 'Impacto Prototipo (Post)', data: getAvg(postData), backgroundColor: 'rgba(0,143,204,0.7)' }
+            ]
+        },
+        options: { scales: { y: { beginAtZero: true, max: 5 } } }
+    });
+  }
+
+  function exportPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    doc.text("Reporte de Evidencia Trazabilidad 2CM2", 10, 10);
+    logs.forEach((l, i) => doc.text(l, 10, 20 + (i*7)));
+    doc.save("Evidencia_Grupo_2CM2.pdf");
+  }
+</script>
+</body>
+</html>
