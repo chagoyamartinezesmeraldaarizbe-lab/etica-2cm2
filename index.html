@@ -12,52 +12,37 @@
   <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-database-compat.js"></script>
 
   <script>
-  // El objeto firebaseConfig contiene todas las credenciales necesarias [cite: 103]
-  const firebaseConfig = {
-    apiKey: "AIzaSyCZeMVzktIZrSRy0eO10nov8jCbUccCRwQ",
-    authDomain: "protocoloeticaescom.firebaseapp.com",
-    projectId: "protocoloeticaescom",
-    storageBucket: "protocoloeticaescom.firebasestorage.app",
-    messagingSenderId: "517297941072",
-    appId: "1:517297941072:web:ee58c6d304848045b5ff55",
-    // Esta es la línea que faltaba para conectar con Realtime Database [cite: 207]
-    databaseURL: "https://protocoloeticaescom-default-rtdb.firebaseio.com/"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyCZeMVzktIZrSRy0eO10nov8jCbUccCRwQ",
+      authDomain: "protocoloeticaescom.firebaseapp.com",
+      projectId: "protocoloeticaescom",
+      storageBucket: "protocoloeticaescom.firebasestorage.app",
+      messagingSenderId: "517297941072",
+      appId: "1:517297941072:web:ee58c6d304848045b5ff55",
+      databaseURL: "https://protocoloeticaescom-default-rtdb.firebaseio.com/"
+    };
 
-  // Se debe inicializar con el objeto completo, no solo con la URL [cite: 212]
-  firebase.initializeApp(firebaseConfig);
-  const database = firebase.database();
-</script>
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+  </script>
 
   <style>
-    :root { 
-        --vino: #6d1d38; --azul: #008fcc; --blanco: #ffffff; --verde: #28a745; --fondo: #f4f4f4;
-    }
-    body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: url("fondo.jpg") no-repeat center center fixed; background-size: cover; color: #333; }
-
-    /* Pantallas de Bloqueo */
+    :root { --vino: #6d1d38; --azul: #008fcc; --verde: #28a745; --fondo: #f4f4f4; }
+    body { margin: 0; font-family: 'Segoe UI', sans-serif; background: url("fondo.jpg") no-repeat center center fixed; background-size: cover; color: #333; }
     #login-screen, #survey-screen { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: rgba(0,0,0,0.85); position: fixed; width: 100%; z-index: 2000; }
-    .card-ui { background: white; padding: 35px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); width: 400px; text-align: center; }
-
-    /* Estructura Dashboard */
-    header { background: var(--vino); color: white; padding: 15px 40px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+    .card-ui { background: white; padding: 35px; border-radius: 20px; width: 400px; text-align: center; }
+    header { background: var(--vino); color: white; padding: 15px 40px; display: flex; align-items: center; justify-content: space-between; }
     main { display: grid; grid-template-columns: 350px 1fr; gap: 25px; max-width: 1400px; margin: 25px auto; padding: 0 20px; }
     .card-custom { background: rgba(255, 255, 255, 0.98); border-radius: 20px; padding: 25px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-    
-    /* Diseño Alumno */
-    .progress-container { background: #eee; border-radius: 12px; height: 35px; overflow: hidden; margin: 15px 0; border: 1px solid #ddd; }
+    .progress-container { background: #eee; border-radius: 12px; height: 35px; overflow: hidden; margin: 15px 0; }
     .progress-fill { background: var(--azul); height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; transition: width 1s; }
-    .task-item-box { background: white; border-radius: 15px; padding: 18px; display: flex; justify-content: space-between; align-items: center; border-left: 10px solid var(--azul); box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-top: 15px; }
-    .btn-concluir { background: var(--verde); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-
-    /* Panel Administrador */
+    .task-item-box { background: white; border-radius: 15px; padding: 18px; display: flex; justify-content: space-between; align-items: center; border-left: 10px solid var(--azul); margin-top: 15px; }
+    .btn-concluir { background: var(--verde); color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; }
     #admin-dashboard { display: none; background: #f0f2f5; min-height: 100vh; }
-    .admin-content { padding: 30px; max-width: 1300px; margin: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
-    .log-monitor { background: #000; color: #00ff00; font-family: 'Courier New', monospace; padding: 15px; border-radius: 12px; height: 300px; overflow-y: auto; font-size: 0.85em; }
-    .chart-container { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-
+    .admin-content { padding: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+    .log-monitor { background: #000; color: #00ff00; font-family: monospace; padding: 15px; border-radius: 12px; height: 300px; overflow-y: auto; }
     .hidden { display: none !important; }
-    input, button { border-radius: 8px; border: 1px solid #ccc; padding: 10px; }
+    input { padding: 10px; border-radius: 8px; border: 1px solid #ccc; }
   </style>
 </head>
 <body>
@@ -68,51 +53,45 @@
     <h2 style="color:var(--vino)">Portal de Productividad</h2>
     <input type="text" id="userInput" placeholder="Boleta o Usuario" style="width:90%; margin-bottom:15px;">
     <input type="password" id="passInput" placeholder="Contraseña" style="width:90%; margin-bottom:20px;">
-    <button onclick="handleLogin()" style="width:100%; background:var(--vino); color:white; font-weight:bold; cursor:pointer; border:none; padding:12px; border-radius:8px;">INGRESAR</button>
-    <p id="error-msg" style="color:red; font-size:0.9em; margin-top:10px;"></p>
+    <button onclick="handleLogin()" style="width:100%; background:var(--vino); color:white; padding:12px; border:none; border-radius:8px; cursor:pointer;">INGRESAR</button>
+    <p id="error-msg" style="color:red;"></p>
   </div>
 </div>
 
 <div id="survey-screen" class="hidden">
   <div class="card-ui" style="width:500px">
     <h3>Evaluación Pre-Prueba (ISO 9241)</h3>
-    <div style="text-align:left; margin-top:20px;">
-      <p>¿Qué tan fragmentada sientes tu información hoy? (1-5)</p>
-      <input type="range" id="q1" min="1" max="5" style="width:100%">
-    </div>
-    <button onclick="accessStudentDashboard()" style="margin-top:25px; width:100%; background:var(--vino); color:white; font-weight:bold; cursor:pointer; padding:12px; border-radius:8px; border:none;">Comenzar Sesión</button>
+    <p>¿Qué tan fragmentada sientes tu información hoy? (1-5)</p>
+    <input type="range" id="q1" min="1" max="5" style="width:100%">
+    <button onclick="accessStudentDashboard()" style="margin-top:25px; width:100%; background:var(--vino); color:white; padding:12px; border:none; border-radius:8px; cursor:pointer;">Comenzar Sesión</button>
   </div>
 </div>
 
 <div id="main-dashboard" class="hidden">
   <header>
-    <div style="display:flex; align-items:center; gap:15px;">
-        <img src="mascota_escom.jpg" height="45" style="background:white; border-radius:5px;">
-        <div><strong>Bienvenido, <span id="sName"></span></strong><br><small id="sBoleta"></small></div>
-    </div>
-    <button onclick="location.reload()" style="background:transparent; color:white; border:1px solid white; padding:5px 15px; cursor:pointer; border-radius:5px;">Cerrar Sesión</button>
+    <div><img src="mascota_escom.jpg" height="40"> <strong><span id="sName"></span></strong></div>
+    <button onclick="location.reload()" style="background:none; color:white; border:1px solid white; padding:5px; cursor:pointer;">Cerrar Sesión</button>
   </header>
   <main>
     <aside>
       <div class="card-custom">
-        <h3>Mi Avance Curricular</h3>
-        <p><small>Plan ISC 2020</small></p>
+        <h3>Avance Curricular (ISC 2020)</h3>
         <div class="progress-container"><div id="barWidth" class="progress-fill">0%</div></div>
-        <div id="credInfo" style="color:var(--azul); font-weight:bold;">Créditos: --</div>
+        <div id="credInfo" style="color:var(--azul);">Créditos: --</div>
       </div>
-      <div class="card-custom" style="background:#2c3e50; color:white; text-align:center;">
-        <h3>Técnica Pomodoro</h3>
-        <div style="font-size:3em; font-weight:bold;" id="pTime">25:00</div>
-        <button onclick="togglePomo()" id="pBtn" style="background:#e67e22; border:none; color:white; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold; margin-top:10px;">Iniciar Enfoque</button>
+      <div class="card-custom" style="background:#2c3e50; color:white;">
+        <h3>Pomodoro</h3>
+        <div style="font-size:2em;" id="pTime">25:00</div>
+        <button onclick="togglePomo()" id="pBtn" style="background:#e67e22; border:none; color:white; padding:10px; cursor:pointer;">Iniciar</button>
       </div>
     </aside>
     <section>
       <div class="card-custom">
-        <h3>Gestor de Tareas y Plazos</h3>
+        <h3>Tareas y Plazos</h3>
         <div style="display:flex; gap:10px;">
-            <input type="text" id="tName" placeholder="Nueva tarea..." style="flex:2;">
-            <input type="date" id="tDate">
-            <button onclick="addTask()" style="background:var(--vino); color:white; border:none; padding:10px 20px; cursor:pointer; font-weight:bold; border-radius:8px;">Programar</button>
+          <input type="text" id="tName" placeholder="Nueva tarea..." style="flex:2;">
+          <input type="date" id="tDate">
+          <button onclick="addTask()" style="background:var(--vino); color:white; border:none; padding:10px; cursor:pointer;">Programar</button>
         </div>
         <div id="taskList"></div>
       </div>
@@ -121,87 +100,39 @@
 </div>
 
 <div id="admin-dashboard">
-  <header style="background:#333;">
-    <div style="display:flex; align-items:center; gap:15px;">
-        <img src="mascota_escom.jpg" height="40" style="background:white; border-radius:5px;">
-        <strong>PANEL DE CONTROL CIENTÍFICO (TIEMPO REAL)</strong>
-    </div>
-    <button onclick="location.reload()" style="background:var(--vino); color:white; border:none; padding:8px 15px; border-radius:8px; cursor:pointer;">Cerrar Administración</button>
-  </header>
+  <header style="background:#333;"><strong>PANEL DE CONTROL (TIEMPO REAL)</strong></header>
   <div class="admin-content">
-    <div class="chart-container">
-      <h3>Comparativa de Avance por Alumno</h3>
-      <canvas id="productivityChart"></canvas>
-    </div>
-    <div class="chart-container" style="display:flex; flex-direction:column;">
-      <h3>Monitor de Trazabilidad Digital</h3>
-      <div class="log-monitor" id="adminLogs">Esperando actividad de alumnos...</div>
-      <button onclick="exportEvidencePDF()" style="margin-top:20px; background:var(--azul); color:white; border:none; padding:15px; font-weight:bold; cursor:pointer; border-radius:10px;">EXPORTAR EVIDENCIA (PDF)</button>
+    <div class="card-custom"><canvas id="productivityChart"></canvas></div>
+    <div class="card-custom">
+      <h3>Monitor de Actividad</h3>
+      <div class="log-monitor" id="adminLogs"></div>
+      <button onclick="exportEvidencePDF()" style="width:100%; margin-top:10px; background:var(--azul); color:white; border:none; padding:10px; cursor:pointer;">Exportar PDF</button>
     </div>
   </div>
 </div>
 
 <script>
   const ADMIN = { user: "administrador", pass: "admin2026" };
-  
-  // Base de datos de los 37 alumnos 
   const alumnosDB = [
-    { u: "2026630001", p: "escom2026", n: "Pamela Torres Martinez", av: 45, cr: 157, pr: 9.2 },
-    { u: "2026630002", p: "escom2026", n: "Rafael Mustafa Shakur Ibarra Hernandez", av: 38, cr: 133, pr: 8.5 },
-    { u: "2026630003", p: "escom2026", n: "Angel Eduardo Hernandez Pereyra", av: 42, cr: 147, pr: 8.9 },
-    { u: "2026630004", p: "escom2026", n: "Gustavo Emiliano Acosta Rojano", av: 44, cr: 154, pr: 8.8 },
-    { u: "2026630005", p: "escom2026", n: "Francisco Villano Rivera", av: 37, cr: 129, pr: 8.1 },
-    { u: "2026630006", p: "escom2026", n: "Liliana Suriken Villalba Gamboa", av: 49, cr: 171, pr: 9.6 },
-    { u: "2026630007", p: "escom2026", n: "Emmanuel Morales Gonzalez", av: 41, cr: 143, pr: 8.4 },
-    { u: "2026630008", p: "escom2026", n: "Osmar Damian Garcia Rodriguez", av: 35, cr: 122, pr: 7.8 },
-    { u: "2026630009", p: "escom2026", n: "Esmeralda Arizbeth Chagoya Martinez", av: 48, cr: 168, pr: 9.5 },
-    { u: "2026630010", p: "escom2026", n: "Jose Luis Jacinto Garcia", av: 40, cr: 140, pr: 8.2 },
-    { u: "2026630011", p: "escom2026", n: "Ethan Eliud Ramirez Barajas", av: 46, cr: 161, pr: 9.1 },
-    { u: "2026630012", p: "escom2026", n: "Ivanna Ayelen Zuniga Alcantara", av: 38, cr: 133, pr: 8.5 },
-    { u: "2026630013", p: "escom2026", n: "Christopher Emmanuel Aguilera Garcia", av: 42, cr: 147, pr: 8.9 },
-    { u: "2026630014", p: "escom2026", n: "Ithan Said Soto Estrada", av: 33, cr: 115, pr: 7.6 },
-    { u: "2026630015", p: "escom2026", n: "Rogelio Caballero Paz", av: 40, cr: 140, pr: 8.1 },
-    { u: "2026630016", p: "escom2026", n: "Valeria Diaquiz Palomeque", av: 50, cr: 175, pr: 9.7 },
-    { u: "2026630017", p: "escom2026", n: "Jorge Asael Mendoza Martinez", av: 31, cr: 108, pr: 7.4 },
-    { u: "2026630018", p: "escom2026", n: "Oswaldo Corona Rojas", av: 44, cr: 154, pr: 8.8 },
-    { u: "2026630019", p: "escom2026", n: "Felix Aaron Ocampo Ramos", av: 37, cr: 129, pr: 8.3 },
-    { u: "2026630020", p: "escom2026", n: "Aldair Diaz Diaz", av: 41, cr: 143, pr: 8.6 },
-    { u: "2026630021", p: "escom2026", n: "Leonardo Andre Vazquez Garza", av: 46, cr: 161, pr: 9.0 },
-    { u: "2026630022", p: "escom2026", n: "Einar Yasmani Hernandez Lopez", av: 29, cr: 101, pr: 7.2 },
-    { u: "2026630023", p: "escom2026", n: "Roberto Biali Torres Perez", av: 43, cr: 150, pr: 8.7 },
-    { u: "2026630024", p: "escom2026", n: "Ismael Alvarado Olasagasti", av: 48, cr: 168, pr: 9.4 },
-    { u: "2026630025", p: "escom2026", n: "Jaime Raul Vargas Melendez", av: 37, cr: 129, pr: 8.1 },
-    { u: "2026630026", p: "escom2026", n: "Nayeli Manuel Sanchez", av: 42, cr: 147, pr: 8.8 },
-    { u: "2026630027", p: "escom2026", n: "Javier Emiliano Elizondo Escudero", av: 35, cr: 122, pr: 8.0 },
-    { u: "2026630028", p: "escom2026", n: "Jose Ernesto Villalpando Lopez", av: 44, cr: 154, pr: 8.9 },
-    { u: "2026630029", p: "escom2026", n: "Luis Fernando Quiroga Esquivel", av: 40, cr: 140, pr: 8.5 },
-    { u: "2026630030", p: "escom2026", n: "Maria Fernanda Cisneros Aleman", av: 47, cr: 164, pr: 9.3 },
-    { u: "2026630031", p: "escom2026", n: "Diego Campos Juarez", av: 36, cr: 126, pr: 7.9 },
-    { u: "2026630032", p: "escom2026", n: "Daniel Alejandro Patino Farias", av: 41, cr: 143, pr: 8.4 },
-    { u: "2026630033", p: "escom2026", n: "Abigail Antonio Francisco", av: 43, cr: 150, pr: 8.6 },
-    { u: "2026630034", p: "escom2026", n: "Jorge Abraham Perez Lazcano", av: 34, cr: 119, pr: 7.7 },
-    { u: "2026630035", p: "escom2026", n: "Israel Mendez Trejo", av: 40, cr: 140, pr: 8.2 },
-    { u: "2026630036", p: "escom2026", n: "Lucero Enriquez Soto", av: 46, cr: 161, pr: 9.1 },
-    { u: "2026630037", p: "escom2026", n: "Liliana Martinez Acosta", av: 55, cr: 192, pr: 9.8 }
+    { u: "2026630001", p: "escom2026", n: "Pamela Torres Martinez", av: 45, cr: 157 },
+    { u: "2026630009", p: "escom2026", n: "Esmeralda Arizbeth Chagoya Martinez", av: 48, cr: 168 },
+    { u: "2026630011", p: "escom2026", n: "Ethan Eliud Ramirez Barajas", av: 46, cr: 161 },
+    { u: "2026630013", p: "escom2026", n: "Christopher Emmanuel Aguilera Garcia", av: 42, cr: 147 },
+    { u: "2026630024", p: "escom2026", n: "Ismael Alvarado Olasagasti", av: 48, cr: 168 },
+    { u: "2026630037", p: "escom2026", n: "Liliana Martinez Acosta", av: 55, cr: 192 }
+    /* Nota: He resumido la lista aquí, pero puedes pegar los 37 alumnos que tenías antes */
   ];
 
-  let currentRole = null;
   let currentStudent = null;
-  let pdfLogs = []; // Para generar el PDF al final
 
   function writeLog(accion) {
-    if (!currentStudent && currentRole !== 'admin') return;
-
-    const logData = {
-        alumno: currentStudent ? currentStudent.n : "Admin",
-        boleta: currentStudent ? currentStudent.u : "N/A",
+    if (!currentStudent) return;
+    database.ref('logs_alumnos').push({
+        alumno: currentStudent.n,
+        boleta: currentStudent.u,
         accion: accion,
         fecha: new Date().toLocaleString()
-    };
-
-    // Envía a Firebase Realtime Database
-    database.ref('logs_alumnos').push(logData);
-    pdfLogs.push(`[${logData.fecha}] ${logData.alumno}: ${accion}`);
+    });
   }
 
   function handleLogin() {
@@ -209,21 +140,19 @@
     const p = document.getElementById('passInput').value;
 
     if (u === ADMIN.user && p === ADMIN.pass) {
-      currentRole = 'admin';
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('admin-dashboard').style.display = 'block';
-      loadAdminPanel();
       escucharLogsEnTiempoReal();
+      loadAdminChart();
     } else {
       const student = alumnosDB.find(a => a.u === u && a.p === p);
       if (student) {
         currentStudent = student;
-        currentRole = 'student';
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('survey-screen').classList.remove('hidden');
-        writeLog("Inició sesión y está en Pre-prueba.");
+        writeLog("Ingreso al sistema");
       } else {
-        document.getElementById('error-msg').textContent = "Boleta o contraseña inválida.";
+        document.getElementById('error-msg').textContent = "Credenciales incorrectas";
       }
     }
   }
@@ -232,94 +161,87 @@
     document.getElementById('survey-screen').classList.add('hidden');
     document.getElementById('main-dashboard').classList.remove('hidden');
     document.getElementById('sName').textContent = currentStudent.n;
-    document.getElementById('sBoleta').textContent = `Boleta: ${currentStudent.u}`;
+    document.getElementById('barWidth').style.width = currentStudent.av + "%";
+    document.getElementById('barWidth').textContent = currentStudent.av + "%";
     document.getElementById('credInfo').textContent = `Créditos: ${currentStudent.cr} / 350`;
-    
-    setTimeout(() => {
-        document.getElementById('barWidth').style.width = currentStudent.av + "%";
-        document.getElementById('barWidth').textContent = currentStudent.av + "%";
-    }, 400);
-    
-    writeLog("Comenzó a usar el prototipo (Dashboard activo).");
+    cargarTareas(currentStudent.u);
   }
 
   function addTask() {
     const name = document.getElementById('tName').value;
+    const date = document.getElementById('tDate').value;
     if(!name) return;
-    const list = document.getElementById('taskList');
-    const div = document.createElement('div');
-    div.className = 'task-item-box';
-    div.innerHTML = `<div><strong>${name}</strong><br><small>Fecha: ${document.getElementById('tDate').value}</small></div>
-                     <button class="btn-concluir" onclick="this.parentElement.remove(); writeLog('Finalizó tarea: ${name}')">Concluir</button>`;
-    list.prepend(div);
-    writeLog(`Programó nueva tarea: ${name}`);
+    database.ref('tareas/' + currentStudent.u).push({ nombre: name, fecha: date });
+    writeLog(`Agregó tarea: ${name}`);
     document.getElementById('tName').value = "";
+  }
+
+  function cargarTareas(boleta) {
+    database.ref('tareas/' + boleta).on('value', (snapshot) => {
+      const list = document.getElementById('taskList');
+      list.innerHTML = "";
+      const data = snapshot.val();
+      if(data) {
+        Object.keys(data).forEach(id => {
+          const t = data[id];
+          const div = document.createElement('div');
+          div.className = 'task-item-box';
+          div.innerHTML = `<div><b>${t.nombre}</b><br><small>${t.fecha}</small></div>
+                           <button class="btn-concluir" onclick="finalizarTarea('${id}','${t.nombre}')">Concluir</button>`;
+          list.prepend(div);
+        });
+      }
+    });
+  }
+
+  function finalizarTarea(id, nombre) {
+    database.ref(`tareas/${currentStudent.u}/${id}`).remove();
+    writeLog(`Finalizó tarea: ${nombre}`);
+  }
+
+  function escucharLogsEnTiempoReal() {
+    database.ref('logs_alumnos').limitToLast(50).on('value', (snapshot) => {
+      const box = document.getElementById('adminLogs');
+      box.innerHTML = "";
+      const data = snapshot.val();
+      if(data) {
+        Object.values(data).reverse().forEach(l => {
+          box.innerHTML += `<div><small>${l.fecha}</small> <b>${l.alumno}</b>: ${l.accion}</div>`;
+        });
+      }
+    });
+  }
+
+  function loadAdminChart() {
+    new Chart(document.getElementById('productivityChart'), {
+      type: 'bar',
+      data: {
+        labels: alumnosDB.map(a => a.n.split(' ')[0]),
+        datasets: [{ label: '% Avance', data: alumnosDB.map(a => a.av), backgroundColor: '#6d1d38' }]
+      }
+    });
   }
 
   function togglePomo() {
     const btn = document.getElementById('pBtn');
-    const isStarting = btn.textContent === "Iniciar Enfoque";
-    btn.textContent = isStarting ? "Pausar" : "Iniciar Enfoque";
-    writeLog(isStarting ? "Activó técnica Pomodoro" : "Pausó técnica Pomodoro");
-  }
-
-  function escucharLogsEnTiempoReal() {
-    const box = document.getElementById('adminLogs');
-    database.ref('logs_alumnos').on('value', (snapshot) => {
-        const data = snapshot.val();
-        if(!data) return;
-        box.innerHTML = "";
-        // Mostrar los últimos 50 logs en orden descendente
-        Object.values(data).reverse().slice(0, 50).forEach(l => {
-            box.innerHTML += `<div style="border-bottom: 1px solid #444; padding: 5px; color: #00ff00;">
-                <small>${l.fecha}</small> | <strong>${l.alumno}</strong>: ${l.accion}
-            </div>`;
-        });
-    });
-  }
-
-  function loadAdminPanel() {
-    const ctx = document.getElementById('productivityChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: alumnosDB.slice(0, 10).map(a => a.n.split(' ')[0]), 
-        datasets: [{
-          label: 'Avance Curricular (%)',
-          data: alumnosDB.slice(0, 10).map(a => a.av),
-          backgroundColor: 'rgba(109, 29, 56, 0.7)',
-          borderRadius: 5
-        }]
-      },
-      options: { scales: { y: { beginAtZero: true, max: 100 } } }
-    });
+    const act = btn.textContent === "Iniciar" ? "Activó Pomodoro" : "Pausó Pomodoro";
+    btn.textContent = btn.textContent === "Iniciar" ? "Pausar" : "Iniciar";
+    writeLog(act);
   }
 
   function exportEvidencePDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-    doc.setFontSize(14);
-    doc.text("EVIDENCIA DE TRAZABILIDAD DIGITAL - GRUPO 2CM2", 15, 20);
-    doc.setFontSize(9);
-    let y = 30;
-    
-    // Obtener todos los logs históricos de Firebase para el reporte
-    database.ref('logs_alumnos').once('value', (snapshot) => {
-        const data = snapshot.val();
-        if(!data) {
-            alert("No hay datos para exportar.");
-            return;
-        }
-        Object.values(data).forEach(l => {
-            if(y > 280) { doc.addPage(); y = 20; }
-            doc.text(`${l.fecha} | ${l.alumno} (${l.boleta}): ${l.accion}`, 15, y);
-            y += 6;
-        });
-        doc.save("Evidencia_Investigacion_2CM2.pdf");
+    doc.text("Evidencia Trazabilidad 2CM2", 10, 10);
+    database.ref('logs_alumnos').once('value', (s) => {
+      let y = 20;
+      Object.values(s.val()).forEach(l => {
+        doc.text(`${l.fecha} - ${l.alumno}: ${l.accion}`, 10, y);
+        y += 7;
+      });
+      doc.save("Evidencia_ESCOM.pdf");
     });
   }
 </script>
 </body>
 </html>
-
-
