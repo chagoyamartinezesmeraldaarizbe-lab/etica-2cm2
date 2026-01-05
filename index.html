@@ -7,22 +7,40 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    :root { --vino: #6d1d38; --azul: #008fcc; --verde: #28a745; --naranja: #e67e22; --rojo: #dc3545; --negro: #1a1a1a; }
+    :root { --vino: #6d1d38; --azul: #008fcc; --verde: #28a745; --naranja: #e67e22; --rojo: #dc3545; --negro: #1a1a1a; --gris: #cccccc; }
     body { margin: 0; font-family: 'Segoe UI', sans-serif; background: url("fondo.jpg") no-repeat center center fixed; background-size: cover; }
-    #login-screen, #survey-screen, #post-survey-screen { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: rgba(0,0,0,0.85); position: fixed; width: 100%; z-index: 2000; }
-    .card-ui { background: white; padding: 30px; border-radius: 20px; width: 500px; text-align: center; max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+    
+    #login-screen, #survey-screen, #post-survey-screen, #map-modal { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: rgba(0,0,0,0.85); position: fixed; width: 100%; z-index: 2000; }
+    .card-ui { background: white; padding: 30px; border-radius: 20px; width: 550px; text-align: center; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+
     header { background: var(--vino); color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
     main { display: grid; grid-template-columns: 350px 1fr; gap: 25px; max-width: 1400px; margin: 25px auto; padding: 0 20px; }
     .card-custom { background: rgba(255, 255, 255, 0.95); padding: 25px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+
     .progress-bar-container { background: #eee; border-radius: 15px; height: 30px; overflow: hidden; margin: 15px 0; border: 1px solid #ddd; }
-    .progress-fill { background: var(--azul); height: 100%; width: 0%; transition: width 2s cubic-bezier(0.1, 0.5, 0.5, 1); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+    .progress-fill { background: var(--azul); height: 100%; width: 0%; transition: width 1.5s ease; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+
+    /* Estilos Mapa */
+    .map-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 20px; text-align: left; }
+    .subject-box { padding: 12px; border: 2px solid var(--gris); border-radius: 10px; cursor: pointer; transition: 0.3s; background: #fff; font-size: 0.85em; display: flex; justify-content: space-between; align-items: center; }
+    .subject-box.passed { background: var(--verde); color: white; border-color: #1e7e34; }
+    .subject-box.locked { opacity: 0.4; cursor: not-allowed; background: #f0f0f0; filter: grayscale(1); }
+    .sem-header { grid-column: span 2; font-weight: bold; color: var(--vino); border-bottom: 2px solid var(--vino); margin-top: 10px; }
+
+    /* Estilos Tareas */
+    .task-input-group { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; background: white; padding: 15px; border-radius: 15px; border: 1px solid #ddd; align-items: center; }
     .task-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-    .task-box { background: white; padding: 15px; border-radius: 12px; border-left: 10px solid var(--azul); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
-    .task-box.done { border-left-color: var(--verde); background: #f0fff0; }
-    .btn-vino { background: var(--vino); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-    .btn-control { border: none; color: white; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.85em; }
-    .log-monitor { background: #000; color: #00ff00; font-family: monospace; padding: 15px; height: 250px; overflow-y: auto; border-radius: 10px; text-align: left; font-size: 0.8em; }
+    .task-box { background: white; padding: 15px; border-radius: 12px; border-left: 10px solid var(--azul); display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .urg-3 { border-left-color: var(--rojo) !important; }
+    .urg-2 { border-left-color: var(--naranja) !important; }
+    .task-box.done { border-left-color: var(--verde) !important; background: #f0fff0; opacity: 0.8; }
+    .btn-action-group { display: flex; gap: 5px; margin-top: 10px; justify-content: flex-end; }
+    
     .hidden { display: none !important; }
+    input, select { padding: 10px; border-radius: 10px; border: 1px solid #ccc; }
+    .btn-prog { background: var(--vino); color: white; border: none; cursor: pointer; font-weight: bold; padding: 10px 20px; border-radius: 8px; }
+    .btn-small { border: none; padding: 5px 8px; border-radius: 5px; cursor: pointer; color: white; font-size: 0.75em; font-weight: bold; }
+    .log-monitor { background: #000; color: #00ff00; font-family: monospace; padding: 15px; height: 300px; overflow-y: auto; border-radius: 10px; text-align: left; font-size: 0.8em; }
   </style>
 </head>
 <body>
@@ -30,178 +48,256 @@
 <div id="login-screen">
   <div class="card-ui" style="width:350px">
     <img src="mascota_escom.jpg" width="90">
-    <h2 style="color:var(--vino)">Investigación 2CM2</h2>
-    <input type="text" id="userInput" placeholder="Boleta (2026630001...)" style="width:90%; padding:10px; border-radius:8px; border:1px solid #ccc; margin-bottom:10px;">
-    <input type="password" id="passInput" placeholder="Contraseña" style="width:90%; padding:10px; border-radius:8px; border:1px solid #ccc;">
-    <button onclick="handleLogin()" class="btn-vino" style="width:95%; margin-top:15px">INGRESAR</button>
+    <h2 style="color:var(--vino)">Portal Académico 2CM2</h2>
+    <input type="text" id="userInput" placeholder="Boleta / Admin" style="width:90%; margin-bottom:10px;">
+    <input type="password" id="passInput" placeholder="Contraseña" style="width:90%">
+    <button onclick="handleLogin()" class="btn-prog" style="width:95%; margin-top:15px">INGRESAR</button>
   </div>
 </div>
 
-<div id="survey-screen" class="hidden">
-  <div class="card-ui"><h3>Evaluación de Diagnóstico</h3><div id="pre-qs" style="text-align:left; font-size:0.85em"></div><button onclick="saveSurvey('pre')" class="btn-vino" style="width:100%; margin-top:15px">Entrar al Dashboard</button></div>
-</div>
+<div id="map-modal" class="hidden"><div class="card-ui"><h3 style="color:var(--azul)">Mapa Curricular ISC 2020</h3><div class="map-grid" id="mapGrid"></div><button onclick="document.getElementById('map-modal').classList.add('hidden')" class="btn-prog" style="margin-top:20px; background:var(--azul)">Cerrar</button></div></div>
 
-<div id="post-survey-screen" class="hidden">
-  <div class="card-ui"><h3>Evaluación de Impacto</h3><div id="post-qs" style="text-align:left; font-size:0.85em"></div><button onclick="saveSurvey('post')" class="btn-vino" style="width:100%; margin-top:15px; background:var(--azul)">Finalizar Prueba</button></div>
-</div>
+<div id="survey-screen" class="hidden"><div class="card-ui"><h3>Pre-Prueba</h3><div id="pre-qs" style="text-align:left; font-size:0.85em"></div><button onclick="saveSurvey('pre')" class="btn-prog" style="width:100%; margin-top:15px">Entrar al Dashboard</button></div></div>
+<div id="post-survey-screen" class="hidden"><div class="card-ui"><h3>Post-Prueba</h3><div id="post-qs" style="text-align:left; font-size:0.85em"></div><button onclick="saveSurvey('post')" class="btn-prog" style="width:100%; margin-top:15px; background:var(--azul)">Finalizar Prueba</button></div></div>
 
 <div id="student-dash" class="hidden">
   <header>
-    <div><strong>Portal Académico: <span id="studName"></span></strong></div>
+    <div><strong>Portal: <span id="studName"></span></strong></div>
     <div>
-        <button onclick="document.getElementById('post-survey-screen').classList.remove('hidden')" style="background:var(--verde); color:white; border:none; padding:8px 15px; border-radius:10px; margin-right:15px; cursor:pointer; font-weight:bold;">Realizar Post-prueba</button>
+        <button onclick="document.getElementById('post-survey-screen').classList.remove('hidden')" style="background:var(--verde); color:white; border:none; padding:8px 15px; border-radius:10px; margin-right:15px; cursor:pointer; font-weight:bold;">Realizar Post-Prueba</button>
         <button onclick="location.reload()" style="background:none; border:1px solid white; color:white; padding:5px 10px; border-radius:5px; cursor:pointer">Salir</button>
     </div>
   </header>
   <main>
     <aside>
-        <div class="card-custom"><h4>Avance Curricular ISC 2020</h4><div class="progress-bar-container"><div id="pBar" class="progress-fill">0%</div></div></div>
+        <div class="card-custom">
+            <h4>Avance Curricular</h4>
+            <div class="progress-bar-container"><div id="pBar" class="progress-fill">0%</div></div>
+            <p id="creditosInfo" style="font-size:0.8em; font-weight:bold; margin-bottom:10px;"></p>
+            <button onclick="openMap()" class="btn-prog" style="background:var(--azul)">Ver Materias</button>
+        </div>
         <div class="card-custom" style="background:var(--negro); color:white; text-align:center">
             <h4 id="pLabel">Técnica Pomodoro</h4>
             <div style="font-size:2.8em; font-weight:bold; margin:10px 0;" id="pTime">25:00</div>
-            <div style="display:flex; gap:5px; justify-content:center; flex-wrap: wrap;">
-                <button onclick="startPomo(25)" class="btn-control" style="background:var(--verde)">Iniciar</button>
-                <button onclick="startPomo(5)" class="btn-control" style="background:var(--azul)">Descanso</button>
-                <button onclick="pausePomo()" class="btn-control" style="background:var(--naranja)">Pausar</button>
-                <button onclick="resetPomo()" class="btn-control" style="background:var(--rojo)">Reset</button>
+            <div style="display:flex; gap:5px; justify-content:center; flex-wrap:wrap;">
+                <button onclick="startPomo(25)" style="background:var(--verde); color:white; border:none; padding:8px; border-radius:5px; cursor:pointer;">Enfoque</button>
+                <button onclick="startPomo(5)" style="background:var(--azul); color:white; border:none; padding:8px; border-radius:5px; cursor:pointer;">Descanso</button>
+                <button onclick="pausePomo()" style="background:var(--naranja); color:white; border:none; padding:8px; border-radius:5px; cursor:pointer;">Pausar</button>
+                <button onclick="resetPomo()" style="background:var(--rojo); color:white; border:none; padding:8px; border-radius:5px; cursor:pointer;">Reset</button>
             </div>
         </div>
     </aside>
     <section>
         <div class="card-custom">
             <h3>Gestor de Tareas y Plazos</h3>
-            <div id="pendingList" class="task-grid"></div>
-            <h4 style="margin-top:30px; color:var(--verde)">Tareas Completadas</h4>
-            <div id="completedList" class="task-grid"></div>
+            <div class="task-input-group">
+                <input type="text" id="tIn" placeholder="Materia y Tarea..." style="flex:2">
+                <input type="date" id="tDate">
+                <select id="tUrg"><option value="1">Baja</option><option value="2" selected>Media</option><option value="3">Alta</option></select>
+                <button onclick="addTask()" class="btn-prog">Programar</button>
+            </div>
+            <h4 id="notif-text" style="color:var(--naranja); display:none; margin-bottom:10px;"></h4>
+            <h4>Tareas Pendientes (Priorizadas)</h4><div id="pendingList" class="task-grid"></div>
+            <h4 style="margin-top:30px; color:var(--verde)">Historial de Éxito</h4><div id="completedList" class="task-grid"></div>
         </div>
     </section>
   </main>
 </div>
 
 <div id="admin-dash" class="hidden">
-  <header style="background:#333"><div><strong>PANEL DE CONTROL ADMINISTRATIVO</strong></div><button onclick="location.reload()" class="btn-vino">Salir</button></header>
+  <header style="background:#333"><strong>PANEL ADMIN 2CM2</strong><button onclick="location.reload()" class="btn-prog">Cerrar</button></header>
   <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; padding:20px;">
-    <div class="card-custom"><h3>Comparativa Pre vs Post</h3><canvas id="compareChart"></canvas></div>
-    <div class="card-custom"><h3>Logs de Trazabilidad</h3><div id="logsBox" class="log-monitor"></div></div>
+    <div class="card-custom"><h3>Impacto: Pre vs Post Prueba</h3><canvas id="compareChart"></canvas></div>
+    <div class="card-custom"><h3>Trazabilidad Digital</h3><div id="logsBox" class="log-monitor"></div><button onclick="exportPDF()" class="btn-prog" style="margin-top:10px; background:var(--azul)">Exportar PDF</button></div>
   </div>
 </div>
 
 <script>
-  const preQuestions = ["¿Capacidad para cumplir plazos sin estrés?", "¿Nivel de sobrecarga cognitiva?", "¿Eficiencia percibida herramientas?", "¿Sentido control Mapa 2020?", "¿Necesidad recordatorios?", "¿Frecuencia olvido fechas?", "¿Estrés por desorganización?", "¿Calidad autogestión actual?", "¿Facilidad priorizar tareas?", "¿Confianza éxito académico?"];
-  const postQuestions = ["¿Capacidad plazos mejoró?", "¿Prototipo redujo sobrecarga?", "¿Eficiencia del prototipo?", "¿Control real Mapa 2020?", "¿Recordatorios útiles?", "¿Reducción olvido fechas?", "¿Disminuyó estrés académico?", "¿Calidad autogestión sistema?", "¿Fácil priorizar con app?", "¿Confianza éxito con app?"];
+  // PREGUNTAS RESTAURADAS
+  const preQs = ["¿Capacidad para cumplir plazos sin estrés?", "¿Nivel de sobrecarga cognitiva?", "¿Eficiencia percibida herramientas actuales?", "¿Sentido control Mapa 2020?", "¿Necesidad recordatorios?", "¿Frecuencia olvido fechas?", "¿Estrés por desorganización?", "¿Calidad autogestión actual?", "¿Facilidad priorizar tareas?", "¿Confianza éxito académico?"];
+  const postQs = ["¿Capacidad plazos mejoró?", "¿Prototipo redujo sobrecarga?", "¿Eficiencia del prototipo?", "¿Control real Mapa 2020?", "¿Recordatorios útiles?", "¿Reducción olvido fechas?", "¿Disminuyó estrés académico?", "¿Calidad autogestión sistema?", "¿Fácil priorizar con app?", "¿Confianza éxito con app?"];
 
-  // NOMBRES REALES Y ÚNICOS 
-  const nombresAlumnos = ["Ethan Eliud Ramirez Barajas", "Christopher Aguilera García", "Ismael Alvarado Olasagasti", "Esmeralda Arizbeth Chagoya", "Lilian Martínez Acosta", "Pamela Torres Martínez", "Rafael Mustafa Shakur", "Ángel Eduardo Hernández", "Gustavo Acosta Rojano", "Francisco Villano Rivera", "Liliana Suriken Villalba", "Emmanuel Morales González", "Osmar García Rodríguez", "Jose Luis Jacinto García", "Ivanna Zúñiga Alcántara", "Ithan Said Soto Estrada", "Rogelio Caballero Paz", "Valeria Diaquiz Palomeque", "Jorge Mendoza Martínez", "Oswaldo Corona Rojas", "Felix Aaron Ocampo", "Aldair Diaz Diaz", "Leonardo Vazquez Garza", "Einar Yasmani Hernandez", "Roberto Biali Torres", "Jaime Vargas Meléndez", "Nayeli Manuel Sanchez", "Javier Elizondo Escudero", "Jose Ernesto Villalpando", "Luis Quiroga Esquivel", "Maria Fernanda Cisneros", "Diego Campos Juarez", "Daniel Patino Farias", "Abigail Antonio Francisco", "Jorge Abraham Perez", "Israel Mendez Trejo", "Lucero Enriquez Soto"];
+  // LISTA DE ALUMNOS (26 SUJETOS)
+  const alumnosDB = [
+    { u: "2026630001", p: "escom2026", n: "Pamela Torres Martinez", av: 45 },
+    { u: "2026630002", p: "escom2026", n: "Mariana Fernanda Cisneros Aleman", av: 47 },
+    { u: "2026630003", p: "escom2026", n: "Ivanna Ayelen Zuniga Alcantara", av: 38 },
+    { u: "2026630004", p: "escom2026", n: "Jorge Ernesto Villalpando Lopez", av: 44 },
+    { u: "2026630005", p: "escom2026", n: "Abigail Antonio Francisco", av: 43 },
+    { u: "2026630006", p: "escom2026", n: "Javier Emiliano Elizondo Escudero", av: 35 },
+    { u: "2026630007", p: "escom2026", n: "Christopher Emmanuel Aguilera Garcia", av: 42 },
+    { u: "2026630008", p: "escom2026", n: "Ethan Eliud Ramirez Barajas", av: 46 }, // Demo limpio
+    { u: "2026630009", p: "escom2026", n: "Ismael Alvarado Olasagasti", av: 48 },
+    { u: "2026630010", p: "escom2026", n: "Esmeralda Arizbeth Chagoya Martinez", av: 48 },
+    { u: "2026630011", p: "escom2026", n: "Diego Campos Juárez", av: 36 },
+    { u: "2026630012", p: "escom2026", n: "Daniel Alejandro Patino Farias", av: 41 },
+    { u: "2026630013", p: "escom2026", n: "Jorge Abraham Perez Lazcano", av: 34 },
+    { u: "2026630014", p: "escom2026", n: "Israel Mendez Trejo", av: 40 },
+    { u: "2026630015", p: "escom2026", n: "Gustavo Emiliano Acosta Rojano", av: 44 },
+    { u: "2026630016", p: "escom2026", n: "Emanuel Morales Gonzalez", av: 41 },
+    { u: "2026630017", p: "escom2026", n: "Osmar Damian Garcia Rodriguez", av: 35 },
+    { u: "2026630018", p: "escom2026", n: "Jaime Raul Vargas Melendez", av: 37 },
+    { u: "2026630019", p: "escom2026", n: "Nayeli Manuel Sanchez", av: 42 },
+    { u: "2026630020", p: "escom2026", n: "Luis Fernando Quiroga Esquivel", av: 40 },
+    { u: "2026630021", p: "escom2026", n: "Ithan Said Soto Estrada", av: 33 },
+    { u: "2026630022", p: "escom2026", n: "Rogelio Caballero Paz", av: 40 },
+    { u: "2026630023", p: "escom2026", n: "Valeria Diaquiz Palomeque", av: 50 },
+    { u: "2026630024", p: "escom2026", n: "Jorge Asael Mendoza Martinez", av: 31 },
+    { u: "2026630025", p: "escom2026", n: "Oswaldo Corona Rojas", av: 44 },
+    { u: "2026630026", p: "escom2026", n: "Félix Aarón Ocampo Ramos", av: 37 }
+  ];
 
-  const alumnosDB = nombresAlumnos.map((n, i) => ({
-    u: "202663" + String(i + 1).padStart(4, '0'),
-    p: "escom2026",
-    n: n,
-    av: 25 + Math.floor(Math.random() * 40)
-  }));
+  const materiasMap = [
+    {id:1, s:1, n:"Cálculo", c:7.5}, {id:2, s:1, n:"Vectorial", c:7.5}, {id:3, s:1, n:"Discretas", c:10.5},
+    {id:4, s:1, n:"Comunicación", c:7.5}, {id:5, s:1, n:"Programación", c:7.5},
+    {id:6, s:2, n:"Álgebra", c:9.0}, {id:7, s:2, n:"Cálculo Ap.", c:7.5}, {id:8, s:2, n:"Mecánica", c:10.5},
+    {id:9, s:2, n:"Ética", c:9.0}, {id:10, s:2, n:"Económicos", c:7.5}, {id:11, s:2, n:"Estructuras", c:7.5},
+    {id:99, s:3, n:"Sem. 3-8 (Bloqueado)", c:0, locked:true}
+  ];
 
-  const materiasS1 = ["Matemáticas Discretas", "Análisis Vectorial", "Cálculo"];
-  const materiasS2 = ["Cálculo Aplicado", "Ingeniería, Ética y Sociedad", "Algoritmos y Estructuras de Datos"];
-
-  let tasks = JSON.parse(localStorage.getItem('tasks_final_p')) || [];
-  let logs = JSON.parse(localStorage.getItem('logs_final_p')) || [];
-  let preData = JSON.parse(localStorage.getItem('pre_final_p')) || [];
-  let postData = JSON.parse(localStorage.getItem('post_final_p')) || [];
+  let tasks = JSON.parse(localStorage.getItem('tasks_v15')) || [];
+  let logs = JSON.parse(localStorage.getItem('logs_v15')) || [];
+  let preD = JSON.parse(localStorage.getItem('pre_v15')) || [];
+  let postD = JSON.parse(localStorage.getItem('post_v15')) || [];
   let currentS = null;
-  let pomoInterval;
-  let secondsRemaining = 1500;
+  let approvedIds = [];
+  let pomoInt;
+  let secRem = 1500;
 
-  if (tasks.length === 0) {
-    alumnosDB.forEach((a, idx) => {
-      if (idx === 0) return;
-      let pool = [...materiasS2];
-      if (idx < 12) pool.push(...materiasS1);
-      else if (idx < 24) pool.push("Análisis Vectorial", "Cálculo");
-      else pool.push("Cálculo");
-
-      for(let i=1; i<=6; i++) tasks.push({ id: Math.random(), u: a.u, n: `${pool[Math.floor(Math.random()*pool.length)]}: Tarea ${i}`, d: '2025-11-20', done: true });
-      for(let i=1; i<=5; i++) tasks.push({ id: Math.random(), u: a.u, n: `${pool[Math.floor(Math.random()*pool.length)]}: Tarea Pendiente ${i}`, d: '2026-01-30', done: false });
-      preData.push({ u: a.u, ans: Array.from({length:10}, () => 1 + Math.floor(Math.random()*2)) });
-      postData.push({ u: a.u, ans: Array.from({length:10}, () => 4 + Math.floor(Math.random()*1)) });
+  // GENERAR HISTORIAL SEGÚN POBLACIÓN ISC 2020
+  if(tasks.length === 0) {
+    const sem1 = ["Matemáticas Discretas", "Análisis Vectorial", "Cálculo"];
+    const sem2 = ["Cálculo Aplicado", "Ingeniería, Ética y Sociedad", "Algoritmos y Estructuras de Datos"];
+    
+    alumnosDB.forEach((a, i) => {
+      if(i === 7) return; // Ethan Eliud limpio
+      let pool = [...sem2];
+      if(i < 6) pool.push(...sem1); else if(i < 15) pool.push("Análisis Vectorial", "Cálculo"); else pool.push("Cálculo");
+      
+      for(let j=1; j<=6; j++) tasks.push({id:Math.random(), u:a.u, n:`${pool[Math.floor(Math.random()*pool.length)]}: Práctica ${j}`, d:'2025-11-15', urg:1, done:true});
+      for(let j=1; j<=5; j++) tasks.push({id:Math.random(), u:a.u, n:`${pool[Math.floor(Math.random()*pool.length)]}: Pendiente ${j}`, d:'2026-03-20', urg:Math.floor(Math.random()*3)+1, done:false});
+      preD.push({u:a.u, ans: Array.from({length:10}, () => 1+Math.floor(Math.random()*3))});
+      postD.push({u:a.u, ans: Array.from({length:10}, () => 4+Math.floor(Math.random()*2))});
     });
-    localStorage.setItem('tasks_final_p', JSON.stringify(tasks));
-    localStorage.setItem('pre_final_p', JSON.stringify(preData));
-    localStorage.setItem('post_final_p', JSON.stringify(postData));
+    localStorage.setItem('tasks_v15', JSON.stringify(tasks));
+    localStorage.setItem('pre_v15', JSON.stringify(preD));
+    localStorage.setItem('post_v15', JSON.stringify(postD));
   }
 
   function handleLogin() {
     const u = document.getElementById('userInput').value;
-    if(u === "admin") { document.getElementById('login-screen').classList.add('hidden'); document.getElementById('admin-dash').classList.remove('hidden'); loadAdmin(); return; }
-    const s = alumnosDB.find(a => a.u === u);
+    const p = document.getElementById('passInput').value;
+    if(u==="administrador" && p==="admin2026"){ 
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('admin-dash').classList.remove('hidden'); loadAdmin(); return;
+    }
+    const s = alumnosDB.find(x => x.u === u && x.p === p);
     if(s) {
         currentS = s;
+        approvedIds = JSON.parse(localStorage.getItem(`map_${s.u}`)) || [];
         document.getElementById('login-screen').classList.add('hidden');
-        renderSurvey('pre-qs', preQuestions, 'pre-ans');
-        renderSurvey('post-qs', postQuestions, 'post-ans');
+        renderS('pre-qs', preQs, 'pre-ans'); renderS('post-qs', postQs, 'post-ans');
         document.getElementById('survey-screen').classList.remove('hidden');
+        addLog(`Inicio: ${s.u}`);
     }
   }
 
-  function renderSurvey(id, list, cl) {
-    document.getElementById(id).innerHTML = list.map((q, i) => `<div style="margin-bottom:8px"><strong>${i+1}. ${q}</strong><br><input type="range" min="1" max="5" class="${cl}" style="width:100%"></div>`).join('');
+  function openMap() {
+    const g = document.getElementById('mapGrid'); g.innerHTML = "";
+    let curSem = 0;
+    materiasMap.forEach(m => {
+        if(m.s !== curSem) { curSem = m.s; g.innerHTML += `<div class="sem-header">Semestre ${curSem}</div>`; }
+        const isP = approvedIds.includes(m.id);
+        g.innerHTML += `<div class="subject-box ${m.locked?'locked':''} ${isP?'passed':''}" onclick="${m.locked?'':`toggleSub(${m.id})`}"><span>${m.n}</span><small>${m.c}cr</small></div>`;
+    });
+    document.getElementById('map-modal').classList.remove('hidden');
   }
 
+  function toggleSub(id) {
+    approvedIds = approvedIds.includes(id) ? approvedIds.filter(x=>x!==id) : [...approvedIds, id];
+    localStorage.setItem(`map_${currentS.u}`, JSON.stringify(approvedIds));
+    openMap(); updateDash();
+  }
+
+  function updateDash() {
+    const totalC = materiasMap.filter(m=>!m.locked).reduce((a,c)=>a+c.c, 0);
+    const appC = materiasMap.filter(m=>approvedIds.includes(m.id)).reduce((a,c)=>a+c.c, 0);
+    const av = Math.round((appC/totalC)*100);
+    document.getElementById('pBar').style.width = av+"%"; document.getElementById('pBar').textContent = av+"%";
+    document.getElementById('creditosInfo').textContent = `Créditos: ${appC.toFixed(1)} / ${totalC.toFixed(1)}`;
+  }
+
+  function renderS(id, l, cl) { document.getElementById(id).innerHTML = l.map((q,i)=>`<div style="margin-bottom:8px"><b>${q}</b><br><input type="range" min="1" max="5" class="${cl}" style="width:100%"></div>`).join(''); }
+
   function saveSurvey(t) {
-    if(t==='pre') {
-        document.getElementById('survey-screen').classList.add('hidden');
-        document.getElementById('student-dash').classList.remove('hidden');
-        document.getElementById('studName').textContent = currentS.n;
-        setTimeout(() => { document.getElementById('pBar').style.width = currentS.av + "%"; document.getElementById('pBar').textContent = currentS.av + "%"; }, 500);
-    } else { document.getElementById('post-survey-screen').classList.add('hidden'); alert("Impacto registrado."); }
-    renderTasks();
+    const ans = Array.from(document.querySelectorAll(t==='pre'?'.pre-ans':'.post-ans')).map(x=>parseInt(x.value));
+    if(t==='pre') { 
+        preD.push({u:currentS.u, ans}); document.getElementById('survey-screen').classList.add('hidden'); 
+        document.getElementById('student-dash').classList.remove('hidden'); document.getElementById('studName').textContent=currentS.n; 
+        updateDash(); renderTasks(); notify();
+    } else { postD.push({u:currentS.u, ans}); alert("Impacto final registrado."); document.getElementById('post-survey-screen').classList.add('hidden'); }
+    localStorage.setItem(t==='pre'?'pre_v15':'post_v15', JSON.stringify(t==='pre'?preD:postD));
+    addLog(`Fase ${t} fin.`);
+  }
+
+  function addTask() {
+    const n = document.getElementById('tIn').value, d = document.getElementById('tDate').value, u = document.getElementById('tUrg').value;
+    if(!n || !d) return;
+    if(confirm(`¿Programar "${n}"?`)) { tasks.push({id:Date.now(), u:currentS.u, n, d, urg:parseInt(u), done:false}); saveLS(); renderTasks(); document.getElementById('tIn').value=""; }
   }
 
   function renderTasks() {
     const p = document.getElementById('pendingList'), c = document.getElementById('completedList');
     p.innerHTML = ""; c.innerHTML = "";
-    tasks.filter(t => t.u === currentS.u).forEach(t => {
-        const h = `<div class="task-box ${t.done?'done':''}"><div><b>${t.n}</b><br><small>${t.d}</small></div><button onclick="fT(${t.id})" class="btn-vino" style="background:var(--verde); padding:5px 10px">${t.done?'✓':'Listo'}</button></div>`;
-        if(t.done) c.innerHTML += h; else p.innerHTML += h;
+    const filtered = tasks.filter(t => t.u === currentS.u).sort((a,b) => b.urg - a.urg || new Date(a.d) - new Date(b.d));
+    filtered.forEach(t => {
+        const html = `<div class="task-box urg-${t.urg} ${t.done?'done':''}"><div><b>${t.n}</b><br><small>${t.d} | U:${t.urg}</small></div>
+            <div class="btn-action-group">
+                ${!t.done ? `<button onclick="doneT(${t.id})" class="btn-small" style="background:var(--verde)">✓</button>` : ''}
+                <button onclick="editT(${t.id})" class="btn-small" style="background:var(--azul)">✎</button>
+                <button onclick="delT(${t.id})" class="btn-small" style="background:var(--rojo)">🗑</button>
+            </div></div>`;
+        if(t.done) c.innerHTML += html; else p.innerHTML += html;
     });
   }
 
-  function fT(id) { const t = tasks.find(x => x.id === id); if(!t.done){ t.done = true; renderTasks(); } }
+  function doneT(id) { if(confirm("¿Completada?")) { tasks.find(x => x.id === id).done = true; saveLS(); renderTasks(); addLog("Tarea fin."); } }
+  function delT(id) { if(confirm("¿Eliminar?")) { tasks = tasks.filter(x => x.id !== id); saveLS(); renderTasks(); addLog("Tarea delete."); } }
+  function editT(id) { const t = tasks.find(x => x.id === id); const n = prompt("Nuevo nombre:", t.n); if(n){ t.n=n; saveLS(); renderTasks(); } }
 
-  function startPomo(mins) {
-    clearInterval(pomoInterval);
-    secondsRemaining = mins * 60;
-    const type = mins === 25 ? "Enfoque" : "Descanso";
-    document.getElementById('pLabel').textContent = `Pomodoro (${type})`;
-    pomoInterval = setInterval(() => {
-        secondsRemaining--;
-        updateUI();
-        if(secondsRemaining <= 0) { clearInterval(pomoInterval); alert("Ciclo terminado"); }
-    }, 1000);
+  function notify() {
+    const cr = tasks.filter(t => t.u === currentS.u && !t.done && t.urg === 3).length;
+    if(cr > 0) { const n = document.getElementById('notif-text'); n.style.display='block'; n.innerHTML = `⚠️ Alerta: Tienes ${cr} tareas de Urgencia Alta.`; }
   }
 
-  function pausePomo() { clearInterval(pomoInterval); }
-
-  function resetPomo() { clearInterval(pomoInterval); secondsRemaining = 1500; updateUI(); document.getElementById('pLabel').textContent = "Técnica Pomodoro"; }
-
-  function updateUI() {
-    const m = Math.floor(secondsRemaining / 60), s = secondsRemaining % 60;
-    document.getElementById('pTime').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+  function startPomo(m) {
+    clearInterval(pomoInt); secRem = m * 60;
+    pomoInt = setInterval(() => { secRem--; updateUI(); if(secRem<=0){ clearInterval(pomoInt); alert("Ciclo terminado"); } }, 1000);
   }
+  function pausePomo() { clearInterval(pomoInt); }
+  function resetPomo() { clearInterval(pomoInt); secRem=1500; updateUI(); }
+  function updateUI() { const min = Math.floor(secRem/60), sec = secRem%60; document.getElementById('pTime').textContent = `${min}:${sec < 10 ? '0' : ''}${sec}`; }
+  function saveLS() { localStorage.setItem('tasks_v15', JSON.stringify(tasks)); }
+  function addLog(m) { logs.push(`[${new Date().toLocaleTimeString()}] ${m}`); localStorage.setItem('logs_v15', JSON.stringify(logs)); }
 
   function loadAdmin() {
-    const getA = (d) => {
-        if(!d.length) return Array(10).fill(0);
-        let s = Array(10).fill(0); d.forEach(x => x.ans.forEach((v, i) => s[i]+=v));
-        return s.map(v => v/d.length);
-    };
+    const getA = (d) => { if(!d.length) return Array(10).fill(0); let s = Array(10).fill(0); d.forEach(x => x.ans.forEach((v, i) => s[i] += v)); return s.map(v => v/d.length); };
     new Chart(document.getElementById('compareChart'), {
         type: 'bar',
         data: {
             labels: ['Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7', 'Q8', 'Q9', 'Q10'],
-            datasets: [{ label: 'Pre (Diagnóstico)', data: getA(preData), backgroundColor: 'maroon' }, { label: 'Post (Impacto)', data: getA(postData), backgroundColor: 'blue' }]
+            datasets: [{ label: 'Pre', data: getA(preD), backgroundColor: 'maroon' }, { label: 'Post', data: getA(postD), backgroundColor: 'blue' }]
         },
         options: { scales: { y: { beginAtZero: true, max: 5 } } }
     });
+    document.getElementById('logsBox').innerHTML = logs.slice().reverse().map(l => `<div>> ${l}</div>`).join('');
+  }
+
+  function exportPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF(); doc.text("Trazabilidad 2CM2", 10, 10);
+    logs.slice(-30).forEach((l, i) => doc.text(l, 10, 20 + (i*7)));
+    doc.save("Reporte_Investigacion.pdf");
   }
 </script>
 </body>
