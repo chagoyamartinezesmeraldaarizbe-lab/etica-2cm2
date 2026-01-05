@@ -47,7 +47,7 @@
 
 <div id="login-screen">
   <div class="card-ui" style="width:350px">
-    <img src="mascota_escom.jpg" width="90">
+    <img src="mascota_escom.png" width="90">
     <h2 style="color:var(--vino)">Portal Académico 2CM2</h2>
     <input type="text" id="userInput" placeholder="Boleta / Admin" style="width:90%; margin-bottom:10px;">
     <input type="password" id="passInput" placeholder="Contraseña" style="width:90%">
@@ -288,7 +288,7 @@
 
   function notify() {
     const cr = tasks.filter(t => t.u === currentS.u && !t.done && t.urg === 3).length;
-    if(cr > 0) { const n = document.getElementById('notif-text'); n.style.display='block'; n.innerHTML = `⚠️ Alerta: Tienes ${cr} tareas de Urgencia Alta.`; }
+    if(cr > 0) { const n = document.getElementById('notif-text'); n.style.display='block'; n.innerHTML = ` Alerta: Tienes ${cr} tareas de Urgencia Alta.`; }
   }
 
   function startPomo(m) {
@@ -323,4 +323,5 @@
 </script>
 </body>
 </html>
+
 
