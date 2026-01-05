@@ -14,14 +14,14 @@
 
     /* Pantallas de Bloqueo */
     #login-screen, #survey-screen { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: rgba(0,0,0,0.85); position: fixed; width: 100%; z-index: 2000; }
-    .card-ui { background: white; padding: 35px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); width: 500px; text-align: center; max-height: 90vh; overflow-y: auto; }
+    .card-ui { background: white; padding: 35px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); width: 400px; text-align: center; }
 
     /* Estructura Dashboard */
     header { background: var(--vino); color: white; padding: 15px 40px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
     main { display: grid; grid-template-columns: 350px 1fr; gap: 25px; max-width: 1400px; margin: 25px auto; padding: 0 20px; }
     .card-custom { background: rgba(255, 255, 255, 0.98); border-radius: 20px; padding: 25px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
     
-    /* Diseño Alumno */
+    /* Diseño Alumno (Fiel a Imágenes) */
     .progress-container { background: #eee; border-radius: 12px; height: 35px; overflow: hidden; margin: 15px 0; border: 1px solid #ddd; }
     .progress-fill { background: var(--azul); height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; transition: width 1s; }
     .task-item-box { background: white; border-radius: 15px; padding: 18px; display: flex; justify-content: space-between; align-items: center; border-left: 10px solid var(--azul); box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-top: 15px; }
@@ -33,9 +33,6 @@
     .log-monitor { background: #000; color: #00ff00; font-family: 'Courier New', monospace; padding: 15px; border-radius: 12px; height: 300px; overflow-y: auto; font-size: 0.85em; }
     .chart-container { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
 
-    .survey-q { text-align: left; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-    .survey-q p { margin: 0 0 10px 0; font-weight: bold; font-size: 0.9em; }
-
     .hidden { display: none !important; }
     input, button { border-radius: 8px; border: 1px solid #ccc; padding: 10px; }
   </style>
@@ -43,33 +40,24 @@
 <body>
 
 <div id="login-screen">
-  <div class="card-ui" style="width: 400px;">
+  <div class="card-ui">
     <img src="mascota_escom.jpg" width="80" alt="ESCOM">
     <h2 style="color:var(--vino)">Portal de Productividad</h2>
     <input type="text" id="userInput" placeholder="Boleta o Usuario" style="width:90%; margin-bottom:15px;">
-    <input type="password" id="passInput" placeholder="Contraseña" style="width:90%; margin-bottom:20px;">
+    <input type="password" id="passInput" placeholder="Contraseña" style="width:90%; padding:10px; margin-bottom:20px; border-radius:8px;">
     <button onclick="handleLogin()" style="width:100%; background:var(--vino); color:white; font-weight:bold; cursor:pointer; border:none; padding:12px; border-radius:8px;">INGRESAR</button>
     <p id="error-msg" style="color:red; font-size:0.9em; margin-top:10px;"></p>
   </div>
 </div>
 
 <div id="survey-screen" class="hidden">
-  <div class="card-ui">
-    <h3 style="color:var(--vino)">Encuesta de Productividad Inicial</h3>
-    <p style="font-size: 0.85em; color: #666;">Responde con sinceridad para establecer tu línea base de investigación.</p>
-    <div id="survey-questions">
-      <div class="survey-q"><p>1. ¿Capacidad para cumplir plazos sin estrés? (1: Muy mala / 5: Excelente)</p><input type="range" class="q-val" min="1" max="5"></div>
-      <div class="survey-q"><p>2. ¿Nivel de sobrecarga cognitiva por dispersión de plataformas? (1: Muy bajo / 5: Muy alto)</p><input type="range" class="q-val" min="1" max="5"></div>
-      <div class="survey-q"><p>3. ¿Eficiencia percibida de tus herramientas actuales? (1: Muy ineficiente / 5: Muy eficiente)</p><input type="range" class="q-val" min="1" max="5"></div>
-      <div class="survey-q"><p>4. ¿Sentido de control sobre el Mapa Curricular 2020? (1: Ninguno / 5: Total)</p><input type="range" class="q-val" min="1" max="5"></div>
-      <div class="survey-q"><p>5. ¿Necesidad percibida de recordatorios inteligentes? (1: Nada / 5: Indispensable)</p><input type="range" class="q-val" min="1" max="5"></div>
-      <div class="survey-q"><p>6. ¿Frecuencia de olvido de fechas críticas? (1: Nunca / 5: Siempre)</p><input type="range" class="q-val" min="1" max="5"></div>
-      <div class="survey-q"><p>7. ¿Nivel de estrés académico por desorganización? (1: Muy bajo / 5: Muy alto)</p><input type="range" class="q-val" min="1" max="5"></div>
-      <div class="survey-q"><p>8. ¿Calidad de tu autogestión actual? (1: Muy baja / 5: Muy alta)</p><input type="range" class="q-val" min="1" max="5"></div>
-      <div class="survey-q"><p>9. ¿Facilidad para priorizar tareas diarias? (1: Muy difícil / 5: Muy fácil)</p><input type="range" class="q-val" min="1" max="5"></div>
-      <div class="survey-q"><p>10. ¿Confianza en el éxito académico con automatización? (1: Muy baja / 5: Muy alta)</p><input type="range" class="q-val" min="1" max="5"></div>
+  <div class="card-ui" style="width:500px">
+    <h3>Evaluación Pre-Prueba (ISO 9241)</h3>
+    <div style="text-align:left; margin-top:20px;">
+      <p>¿Qué tan fragmentada sientes tu información hoy? (1-5)</p>
+      <input type="range" min="1" max="5" style="width:100%">
     </div>
-    <button onclick="accessStudentDashboard()" style="margin-top:25px; width:100%; background:var(--vino); color:white; font-weight:bold; border:none; padding:12px; border-radius:8px; cursor:pointer;">Enviar y Comenzar Sesión</button>
+    <button onclick="accessStudentDashboard()" style="margin-top:25px; width:100%; background:var(--vino); color:white; font-weight:bold; border:none; padding:12px; border-radius:8px; cursor:pointer;">Comenzar Sesión</button>
   </div>
 </div>
 
@@ -119,7 +107,7 @@
   </header>
   <div class="admin-content">
     <div class="chart-container">
-      <h3>Perfil de Productividad Grupal (Promedios)</h3>
+      <h3>Comparativa de Avance por Alumno</h3>
       <canvas id="productivityChart"></canvas>
     </div>
     <div class="chart-container" style="display:flex; flex-direction:column;">
@@ -131,9 +119,10 @@
 </div>
 
 <script>
-  const ADMIN = { user: "administrador", pass: "admin2026", nombre: "Admin" };
+  // CONFIGURACIÓN DE CUENTAS
+  const ADMIN = { user: "administrador", pass: "admin2026", nombre: "Administrador del Proyecto" };
   
-  // Muestra de 37 Alumnos
+  // Base de Datos Integral (37 Alumnos)
   const alumnosDB = [
     { u: "2026630001", p: "escom2026", n: "Pamela Torres Martinez", av: 45, cr: 157, pr: 9.2 },
     { u: "2026630002", p: "escom2026", n: "Rafael Mustafa Shakur Ibarra Hernandez", av: 38, cr: 133, pr: 8.5 },
@@ -177,12 +166,11 @@
   let currentRole = null;
   let currentStudent = null;
   let globalLogs = JSON.parse(localStorage.getItem('student_logs')) || [];
-  let surveyData = JSON.parse(localStorage.getItem('survey_results')) || [];
 
   function writeLog(msg) {
     if(currentRole === 'admin') return; 
     const time = new Date().toLocaleTimeString();
-    const entry = `[${time}] [Sujeto: ${currentStudent.u}] ${msg}`;
+    const entry = `[${time}] [Boleta: ${currentStudent.u}] ${msg}`;
     globalLogs.push(entry);
     localStorage.setItem('student_logs', JSON.stringify(globalLogs));
   }
@@ -190,6 +178,7 @@
   function handleLogin() {
     const u = document.getElementById('userInput').value;
     const p = document.getElementById('passInput').value;
+
     if (u === ADMIN.user && p === ADMIN.pass) {
       currentRole = 'admin';
       document.getElementById('login-screen').classList.add('hidden');
@@ -202,7 +191,7 @@
         currentRole = 'student';
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('survey-screen').classList.remove('hidden');
-        writeLog("Sujeto autenticado.");
+        writeLog("Sujeto ingresó al sistema.");
       } else {
         document.getElementById('error-msg').textContent = "Credenciales incorrectas.";
       }
@@ -210,11 +199,6 @@
   }
 
   function accessStudentDashboard() {
-    // Recolectar respuestas de encuesta
-    const answers = Array.from(document.querySelectorAll('.q-val')).map(i => parseInt(i.value));
-    surveyData.push({ u: currentStudent.u, answers: answers });
-    localStorage.setItem('survey_results', JSON.stringify(surveyData));
-
     document.getElementById('survey-screen').classList.add('hidden');
     document.getElementById('main-dashboard').classList.remove('hidden');
     document.getElementById('sName').textContent = currentStudent.n;
@@ -224,7 +208,7 @@
         document.getElementById('barWidth').style.width = currentStudent.av + "%";
         document.getElementById('barWidth').textContent = currentStudent.av + "%";
     }, 400);
-    writeLog("Encuesta Pre-prueba completada y Dashboard accedido.");
+    writeLog("Dashboard activo tras Pre-prueba.");
   }
 
   function addTask() {
@@ -236,7 +220,7 @@
     div.innerHTML = `<div><strong>${name}</strong><br><small>Fecha: ${document.getElementById('tDate').value}</small></div>
                      <button class="btn-concluir" onclick="this.parentElement.remove(); completeTask('${name}')">Concluir</button>`;
     list.prepend(div);
-    writeLog(`Tarea creada: ${name}`);
+    writeLog(`Tarea programada: ${name}`);
   }
 
   function completeTask(name) { writeLog(`Tarea finalizada: ${name}`); }
@@ -245,34 +229,26 @@
     const box = document.getElementById('adminLogs');
     box.innerHTML = globalLogs.map(l => `<div>> ${l}</div>`).join('');
     
-    // Generar Gráfica de Perfil de Productividad (Promedios de encuesta)
-    const averages = [0,0,0,0,0,0,0,0,0,0];
-    if(surveyData.length > 0) {
-        surveyData.forEach(s => s.answers.forEach((v, i) => averages[i] += v));
-        averages.forEach((v, i) => averages[i] = v / surveyData.length);
-    }
-
     const ctx = document.getElementById('productivityChart').getContext('2d');
     new Chart(ctx, {
-      type: 'radar', // Radar para ver el perfil completo
+      type: 'bar',
       data: {
-        labels: ['Plazos', 'Carga Cogn.', 'Eficiencia', 'Mapa Curric.', 'Recordatorios', 'Olvido', 'Estrés', 'Autogestión', 'Prioridad', 'Confianza'],
+        labels: alumnosDB.slice(0, 15).map(a => a.n.split(' ')[0]), 
         datasets: [{
-          label: 'Perfil Grupal 2CM2 (Promedio)',
-          data: averages,
-          backgroundColor: 'rgba(109, 29, 56, 0.4)',
-          borderColor: 'var(--vino)',
-          pointBackgroundColor: 'var(--vino)'
+          label: 'Avance Curricular (%)',
+          data: alumnosDB.slice(0, 15).map(a => a.av),
+          backgroundColor: 'rgba(109, 29, 56, 0.7)',
+          borderRadius: 5
         }]
       },
-      options: { scales: { r: { beginAtZero: true, max: 5 } } }
+      options: { scales: { y: { beginAtZero: true, max: 100 } } }
     });
   }
 
   function exportEvidencePDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-    doc.text("EVIDENCIA DE INVESTIGACIÓN ÉTICA - GRUPO 2CM2", 15, 20);
+    doc.text("EVIDENCIA DE TRAZABILIDAD - INVESTIGACIÓN ÉTICA 2CM2", 15, 20);
     doc.setFontSize(8);
     let y = 30;
     globalLogs.forEach(log => {
