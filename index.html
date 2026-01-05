@@ -200,35 +200,92 @@
 
   function addTask() {
     const name = document.getElementById('tName').value;
-    const date = document.getElementById('tDate').value;
-    if(!name) return;
-    database.ref('tareas/' + currentStudent.u).push({ nombre: name, fecha: date });
-    writeLog(`Agregó tarea: ${name}`);
-    document.getElementById('tName').value = "";
-  }
+    const dateInput = document.getElementById('tDate').value;
+    
+    if(!name || !dateInput) {
+        alert("Por favor, completa el nombre y la fecha de la tarea.");
+        return;
+    }
+
+    // Confirmación de agregar
+    const confirmar = confirm(`¿Deseas programar la tarea: "${name}" para el día ${dateInput}?`);
+    
+    if(confirmar) {
+        const fechaTarea = new Date(dateInput);
+        const hoy = new Date();
+        hoy.setHours(0,0,0,0); // Ajustar para comparar solo fechas
+
+        // Notificación si la tarea ya venció
+        if(fechaTarea < hoy) {
+            alert("Nota: Estás registrando una tarea con fecha pasada o para hoy.");
+        }
+
+        database.ref('tareas/' + currentStudent.u).push({ 
+            nombre: name, 
+            fecha: dateInput 
+        });
+        
+        writeLog(`Agregó tarea: ${name}`);
+        document.getElementById('tName').value = "";
+    }
+}
 
   function cargarTareas(boleta) {
     database.ref('tareas/' + boleta).on('value', (snapshot) => {
-      const list = document.getElementById('taskList');
-      list.innerHTML = "";
-      const data = snapshot.val();
-      if(data) {
-        Object.keys(data).forEach(id => {
-          const t = data[id];
-          const div = document.createElement('div');
-          div.className = 'task-item-box';
-          div.innerHTML = `<div><b>${t.nombre}</b><br><small>${t.fecha}</small></div>
-                           <button class="btn-concluir" onclick="finalizarTarea('${id}','${t.nombre}')">Concluir</button>`;
-          list.prepend(div);
-        });
-      }
-    });
-  }
+        const list = document.getElementById('taskList');
+        list.innerHTML = "";
+        const data = snapshot.val();
+        
+        if(data) {
+            Object.keys(data).forEach(id => {
+                const t = data[id];
+                const fechaTarea = new Date(t.fecha);
+                const hoy = new Date();
+                hoy.setHours(0,0,0,0);
 
-  function finalizarTarea(id, nombre) {
-    database.ref(`tareas/${currentStudent.u}/${id}`).remove();
-    writeLog(`Finalizó tarea: ${nombre}`);
-  }
+                // Cálculo de diferencia en días
+                const diffTiempo = fechaTarea - hoy;
+                const diffDias = Math.ceil(diffTiempo / (1000 * 60 * 60 * 24));
+                
+                let etiquetaDias = "";
+                let colorEtiqueta = "var(--azul)";
+
+                if(diffDias < 0) {
+                    etiquetaDias = "❌ Tarea vencida";
+                    colorEtiqueta = "red";
+                } else if(diffDias === 0) {
+                    etiquetaDias = "⚠️ Entrega hoy";
+                    colorEtiqueta = "orange";
+                } else {
+                    etiquetaDias = `⏳ Faltan ${diffDias} día(s)`;
+                }
+
+                const div = document.createElement('div');
+                div.className = 'task-item-box';
+                div.style.borderLeftColor = colorEtiqueta; // Cambia color según urgencia
+                
+                div.innerHTML = `
+                    <div>
+                        <b>${t.nombre}</b><br>
+                        <small>${t.fecha} — <span style="color:${colorEtiqueta}; font-weight:bold;">${etiquetaDias}</span></small>
+                    </div>
+                    <button class="btn-concluir" onclick="finalizarTarea('${id}','${t.nombre}')">Concluir</button>
+                `;
+                list.prepend(div);
+            });
+        }
+    });
+}
+
+function finalizarTarea(id, nombre) {
+    const confirmar = confirm(`¿Estás seguro de que quieres marcar como concluida (eliminar) la tarea: "${nombre}"?`);
+    
+    if(confirmar) {
+        database.ref(`tareas/${currentStudent.u}/${id}`).remove();
+        writeLog(`Finalizó tarea: ${nombre}`);
+        alert("Tarea eliminada correctamente.");
+    }
+}
 
   function escucharLogsEnTiempoReal() {
     database.ref('logs_alumnos').limitToLast(50).on('value', (snapshot) => {
@@ -276,4 +333,5 @@
 </script>
 </body>
 </html>
+
 
