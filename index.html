@@ -114,14 +114,45 @@
 <script>
   const ADMIN = { user: "administrador", pass: "admin2026" };
   const alumnosDB = [
-    { u: "2026630001", p: "escom2026", n: "Pamela Torres Martinez", av: 45, cr: 157 },
-    { u: "2026630009", p: "escom2026", n: "Esmeralda Arizbeth Chagoya Martinez", av: 48, cr: 168 },
-    { u: "2026630011", p: "escom2026", n: "Ethan Eliud Ramirez Barajas", av: 46, cr: 161 },
-    { u: "2026630013", p: "escom2026", n: "Christopher Emmanuel Aguilera Garcia", av: 42, cr: 147 },
-    { u: "2026630024", p: "escom2026", n: "Ismael Alvarado Olasagasti", av: 48, cr: 168 },
-    { u: "2026630037", p: "escom2026", n: "Liliana Martinez Acosta", av: 55, cr: 192 }
-    /* Nota: He resumido la lista aquí, pero puedes pegar los 37 alumnos que tenías antes */
+    { u: "2026630001", p: "escom2026", n: "Pamela Torres Martinez", av: 45, cr: 157, pr: 9.2 },
+    { u: "2026630002", p: "escom2026", n: "Rafael Mustafa Shakur Ibarra Hernandez", av: 38, cr: 133, pr: 8.5 },
+    { u: "2026630003", p: "escom2026", n: "Angel Eduardo Hernandez Pereyra", av: 42, cr: 147, pr: 8.9 },
+    { u: "2026630004", p: "escom2026", n: "Gustavo Emiliano Acosta Rojano", av: 44, cr: 154, pr: 8.8 },
+    { u: "2026630005", p: "escom2026", n: "Francisco Villano Rivera", av: 37, cr: 129, pr: 8.1 },
+    { u: "2026630006", p: "escom2026", n: "Liliana Suriken Villalba Gamboa", av: 49, cr: 171, pr: 9.6 },
+    { u: "2026630007", p: "escom2026", n: "Emmanuel Morales Gonzalez", av: 41, cr: 143, pr: 8.4 },
+    { u: "2026630008", p: "escom2026", n: "Osmar Damian Garcia Rodriguez", av: 35, cr: 122, pr: 7.8 },
+    { u: "2026630009", p: "escom2026", n: "Esmeralda Arizbeth Chagoya Martinez", av: 48, cr: 168, pr: 9.5 },
+    { u: "2026630010", p: "escom2026", n: "Jose Luis Jacinto Garcia", av: 40, cr: 140, pr: 8.2 },
+    { u: "2026630011", p: "escom2026", n: "Ethan Eliud Ramirez Barajas", av: 46, cr: 161, pr: 9.1 },
+    { u: "2026630012", p: "escom2026", n: "Ivanna Ayelen Zuniga Alcantara", av: 38, cr: 133, pr: 8.5 },
+    { u: "2026630013", p: "escom2026", n: "Christopher Emmanuel Aguilera Garcia", av: 42, cr: 147, pr: 8.9 },
+    { u: "2026630014", p: "escom2026", n: "Ithan Said Soto Estrada", av: 33, cr: 115, pr: 7.6 },
+    { u: "2026630015", p: "escom2026", n: "Rogelio Caballero Paz", av: 40, cr: 140, pr: 8.1 },
+    { u: "2026630016", p: "escom2026", n: "Valeria Diaquiz Palomeque", av: 50, cr: 175, pr: 9.7 },
+    { u: "2026630017", p: "escom2026", n: "Jorge Asael Mendoza Martinez", av: 31, cr: 108, pr: 7.4 },
+    { u: "2026630018", p: "escom2026", n: "Oswaldo Corona Rojas", av: 44, cr: 154, pr: 8.8 },
+    { u: "2026630019", p: "escom2026", n: "Felix Aaron Ocampo Ramos", av: 37, cr: 129, pr: 8.3 },
+    { u: "2026630020", p: "escom2026", n: "Aldair Diaz Diaz", av: 41, cr: 143, pr: 8.6 },
+    { u: "2026630021", p: "escom2026", n: "Leonardo Andre Vazquez Garza", av: 46, cr: 161, pr: 9.0 },
+    { u: "2026630022", p: "escom2026", n: "Einar Yasmani Hernandez Lopez", av: 29, cr: 101, pr: 7.2 },
+    { u: "2026630023", p: "escom2026", n: "Roberto Biali Torres Perez", av: 43, cr: 150, pr: 8.7 },
+    { u: "2026630024", p: "escom2026", n: "Ismael Alvarado Olasagasti", av: 48, cr: 168, pr: 9.4 },
+    { u: "2026630025", p: "escom2026", n: "Jaime Raul Vargas Melendez", av: 37, cr: 129, pr: 8.1 },
+    { u: "2026630026", p: "escom2026", n: "Nayeli Manuel Sanchez", av: 42, cr: 147, pr: 8.8 },
+    { u: "2026630027", p: "escom2026", n: "Javier Emiliano Elizondo Escudero", av: 35, cr: 122, pr: 8.0 },
+    { u: "2026630028", p: "escom2026", n: "Jose Ernesto Villalpando Lopez", av: 44, cr: 154, pr: 8.9 },
+    { u: "2026630029", p: "escom2026", n: "Luis Fernando Quiroga Esquivel", av: 40, cr: 140, pr: 8.5 },
+    { u: "2026630030", p: "escom2026", n: "Maria Fernanda Cisneros Aleman", av: 47, cr: 164, pr: 9.3 },
+    { u: "2026630031", p: "escom2026", n: "Diego Campos Juarez", av: 36, cr: 126, pr: 7.9 },
+    { u: "2026630032", p: "escom2026", n: "Daniel Alejandro Patino Farias", av: 41, cr: 143, pr: 8.4 },
+    { u: "2026630033", p: "escom2026", n: "Abigail Antonio Francisco", av: 43, cr: 150, pr: 8.6 },
+    { u: "2026630034", p: "escom2026", n: "Jorge Abraham Perez Lazcano", av: 34, cr: 119, pr: 7.7 },
+    { u: "2026630035", p: "escom2026", n: "Israel Mendez Trejo", av: 40, cr: 140, pr: 8.2 },
+    { u: "2026630036", p: "escom2026", n: "Lucero Enriquez Soto", av: 46, cr: 161, pr: 9.1 },
+    { u: "2026630037", p: "escom2026", n: "Liliana Martinez Acosta", av: 55, cr: 192, pr: 9.8 }
   ];
+
 
   let currentStudent = null;
 
@@ -245,3 +276,4 @@
 </script>
 </body>
 </html>
+
